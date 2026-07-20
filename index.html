@@ -1639,6 +1639,7 @@
 
         .detected-email-item { animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Email Verification */
         .verify-code-input {
@@ -2351,7 +2352,7 @@
                 <span class="cart-badge" id="cartCount">0</span>
             </div>
 
-            <button class="auth-btn" onclick="openModal('loginModal')" id="authBtn" data-i18n="nav_login">Connexion</button>
+            <button class="auth-btn" onclick="openLoginWithDetection()" id="authBtn" data-i18n="nav_login">Connexion</button>
         </div>
     </nav>
 
@@ -2613,6 +2614,45 @@
             <span data-i18n="footer_currency">Prix affiches en Dinars Algeriens (DA)</span>
         </div>
     </footer>
+
+    <!-- Auto-Detect Email Modal -->
+    <div class="modal-overlay" id="autoDetectModal">
+        <div class="modal" style="max-width:440px;">
+            <button class="modal-close" onclick="closeModal('autoDetectModal')"><i class="fas fa-times"></i></button>
+            <div style="text-align:center;margin-bottom:24px;">
+                <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem;">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h2 data-i18n="detect_title">Selectionnez votre email</h2>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin-top:8px;" data-i18n="detect_subtitle">Emails detectes sur cet appareil</p>
+            </div>
+
+            <div id="autoDetectEmailsList" style="margin-bottom:16px;"></div>
+
+            <div id="autoDetectLoading" style="text-align:center;padding:20px;display:none;">
+                <div class="spinner" style="width:30px;height:30px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;"></div>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;" data-i18n="detect_scanning">Detection des emails en cours...</p>
+            </div>
+
+            <div class="divider"><span data-i18n="login_or">ou</span></div>
+
+            <div style="position:relative;">
+                <input type="email" id="autoDetectEmailInput" autocomplete="email" placeholder="votre@email.com"
+                    style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();manualEmailLogin();}">
+            </div>
+
+            <button class="form-submit" onclick="manualEmailLogin()" style="margin-top:12px;width:100%;" data-i18n="detect_continue">
+                <i class="fas fa-arrow-right"></i> Continuer
+            </button>
+
+            <div style="text-align:center;margin-top:16px;">
+                <a href="#" onclick="closeModal('autoDetectModal');openModal('loginModal')" style="color:rgba(255,255,255,0.4);font-size:0.8rem;text-decoration:none;" data-i18n="detect_more_options">
+                    Plus d'options de connexion
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- Login Modal -->
     <div class="modal-overlay" id="loginModal">
@@ -3148,7 +3188,12 @@
                 admin_emailjs_template_msg: "Template Message (ID)",
                 admin_save_settings: "Enregistrer",
                 admin_test_email: "Tester Email",
-                login_device_emails: "Emails detectes sur cet appareil"
+                login_device_emails: "Emails detectes sur cet appareil",
+                detect_title: "Selectionnez votre email",
+                detect_subtitle: "Emails detectes sur cet appareil",
+                detect_scanning: "Detection des emails en cours...",
+                detect_continue: "Continuer",
+                detect_more_options: "Plus d'options de connexion"
             },
             ar: {
                 nav_home: "الرئيسية", nav_categories: "الفئات", nav_products: "المنتجات",
@@ -3252,7 +3297,12 @@
                 admin_emailjs_template_msg: "قالب الرسالة (ID)",
                 admin_save_settings: "حفظ الإعدادات",
                 admin_test_email: "اختبار البريد",
-                login_device_emails: "البريد المكتشف على هذا الجهاز"
+                login_device_emails: "البريد المكتشف على هذا الجهاز",
+                detect_title: "اختر بريدك الإلكتروني",
+                detect_subtitle: "البريد المكتشف على هذا الجهاز",
+                detect_scanning: "جاري كشف الإيميلات...",
+                detect_continue: "متابعة",
+                detect_more_options: "خيارات تسجيل دخول أخرى"
             }
         };
 
@@ -3384,6 +3434,7 @@
 
             closeModal('loginModal');
             closeModal('registerModal');
+            closeModal('autoDetectModal');
             confirmEmailSelection();
         }
 
@@ -3629,6 +3680,92 @@
         // Auth
         let pendingEmails = [];
         let selectedEmail = null;
+
+        // ========== AUTO-DETECT EMAIL ==========
+        function openLoginWithDetection() {
+            openModal('autoDetectModal');
+            scanDeviceEmails();
+        }
+
+        function scanDeviceEmails() {
+            const loading = document.getElementById('autoDetectLoading');
+            const list = document.getElementById('autoDetectEmailsList');
+            const input = document.getElementById('autoDetectEmailInput');
+
+            list.innerHTML = '';
+            loading.style.display = 'block';
+            input.value = '';
+
+            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
+            const detected = [];
+
+            savedEmails.forEach(e => {
+                if (!detected.find(d => d.address === e.address)) {
+                    detected.push(e);
+                }
+            });
+
+            setTimeout(() => {
+                loading.style.display = 'none';
+
+                if (detected.length > 0) {
+                    let html = '';
+                    detected.forEach((email, i) => {
+                        const icon = email.provider === 'google' ? 'fab fa-google' :
+                                     email.provider === 'facebook' ? 'fab fa-facebook' : 'fas fa-envelope';
+                        const color = email.provider === 'google' ? '#EA4335' :
+                                      email.provider === 'facebook' ? '#1877F2' : 'var(--accent)';
+                        const bgColor = email.provider === 'google' ? 'rgba(234,67,53,0.12)' :
+                                        email.provider === 'facebook' ? 'rgba(24,119,242,0.12)' : 'rgba(212,175,55,0.12)';
+                        html += `
+                            <div class="detected-email-item" onclick="selectDetectedEmail('${email.address}', '${(email.name || email.address.split('@')[0]).replace(/'/g, "\\'")}', '${email.provider || 'email'}')"
+                                style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:${bgColor};border:1px solid rgba(255,255,255,0.06);border-radius:14px;margin-bottom:10px;cursor:pointer;transition:all 0.3s;"
+                                onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
+                                onmouseout="this.style.borderColor='rgba(255,255,255,0.06)';this.style.transform='none'">
+                                <div style="width:40px;height:40px;border-radius:50%;background:${bgColor};display:flex;align-items:center;justify-content:center;">
+                                    <i class="${icon}" style="font-size:1rem;color:${color};"></i>
+                                </div>
+                                <div style="flex:1;">
+                                    <div style="font-size:0.9rem;color:var(--white);font-weight:600;">${email.name || email.address.split('@')[0]}</div>
+                                    <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);">${email.address}</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="color:rgba(255,255,255,0.15);font-size:0.75rem;"></i>
+                            </div>`;
+                    });
+                    list.innerHTML = html;
+                }
+
+                input.focus();
+                input.click();
+            }, 800);
+        }
+
+        function selectDetectedEmail(email, name, provider) {
+            pendingEmails = [{ address: email, type: provider, icon: 'fab fa-' + provider, name: name }];
+            selectedEmail = pendingEmails[0];
+            completeSocialLogin(email, name, provider, '');
+        }
+
+        function manualEmailLogin() {
+            const email = document.getElementById('autoDetectEmailInput').value.trim();
+            if (!email || !email.includes('@')) {
+                showToast(translations[currentLang].toast_fill_fields);
+                return;
+            }
+            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
+            const saved = savedEmails.find(e => e.address === email);
+            const name = saved ? saved.name : email.split('@')[0];
+
+            const isNew = !savedEmails.find(e => e.address === email);
+            if (isNew) {
+                savedEmails.push({ address: email, provider: 'email', type: 'email', name: name });
+                localStorage.setItem('spc_device_emails', JSON.stringify(savedEmails));
+            }
+
+            pendingEmails = [{ address: email, type: 'email', icon: 'fas fa-envelope', name: name }];
+            selectedEmail = pendingEmails[0];
+            completeSocialLogin(email, name, 'email', '');
+        }
 
         function socialLogin(provider) {
             pendingEmails = [];
