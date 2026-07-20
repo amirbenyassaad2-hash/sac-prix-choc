@@ -1635,6 +1635,495 @@
         .email-option .email-icon.facebook { background: rgba(24, 119, 242, 0.15); color: #1877F2; }
         .email-option .email-icon.primary { background: rgba(212, 175, 55, 0.15); color: var(--accent); }
 
+        /* Email Verification */
+        .verify-code-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .verify-code-input input {
+            width: 50px; height: 55px;
+            background: var(--gray);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .verify-code-input input:focus {
+            border-color: var(--accent);
+        }
+
+        .verify-email-display {
+            text-align: center;
+            padding: 12px 20px;
+            background: var(--gray);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .verify-resend {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .verify-resend a {
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Checkout Confirmation */
+        .order-summary {
+            background: var(--gray);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .order-summary h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .order-item:last-child { border-bottom: none; }
+
+        .order-item img {
+            width: 55px; height: 55px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .order-item-info { flex: 1; }
+        .order-item-info h4 { font-size: 0.9rem; margin-bottom: 3px; }
+        .order-item-info span { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+
+        .order-item-price {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.95rem;
+        }
+
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 25px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .order-total-row span:first-child { font-size: 1rem; }
+        .order-total-row span:last-child { font-weight: 700; color: var(--accent); font-size: 1.2rem; }
+
+        .order-success {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .order-success .check-icon {
+            width: 80px; height: 80px;
+            background: rgba(46, 204, 113, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            color: #2ECC71;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .order-success h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .order-success p {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 5px;
+        }
+
+        .order-id {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--gray);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin: 10px 0 20px;
+        }
+
+        /* Chat / Messaging System */
+        .chat-panel {
+            position: fixed;
+            bottom: 0; right: 0;
+            width: 400px;
+            height: 520px;
+            background: var(--black-light);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px 20px 0 0;
+            z-index: 9990;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+        }
+
+        .chat-panel.show { display: flex; }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .chat-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header-avatar {
+            width: 40px; height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--black);
+            font-size: 0.85rem;
+        }
+
+        .chat-header-info h4 { font-size: 0.95rem; }
+        .chat-header-info span {
+            font-size: 0.75rem;
+            color: #2ECC71;
+        }
+
+        .chat-close {
+            background: none; border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.2rem; cursor: pointer;
+        }
+
+        .chat-close:hover { color: var(--accent); }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-msg {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            animation: msgIn 0.3s ease;
+        }
+
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-msg.sent {
+            align-self: flex-end;
+            background: var(--accent);
+            color: var(--black);
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-msg.received {
+            align-self: flex-start;
+            background: var(--gray);
+            color: var(--white);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-msg .msg-time {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .chat-msg.sent .msg-time { text-align: right; }
+
+        .chat-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--gray);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            color: var(--white);
+            font-size: 0.9rem;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .chat-input-area input:focus { border-color: var(--accent); }
+
+        .chat-send-btn {
+            width: 42px; height: 42px;
+            background: var(--accent);
+            color: var(--black);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .chat-send-btn:hover { transform: scale(1.1); }
+
+        .chat-trigger {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            width: 55px; height: 55px;
+            background: var(--accent);
+            color: var(--black);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9989;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .chat-trigger.show { display: flex; }
+        .chat-trigger:hover { transform: scale(1.1); }
+
+        .chat-trigger .unread-dot {
+            position: absolute;
+            top: -2px; right: -2px;
+            width: 14px; height: 14px;
+            background: #E74C3C;
+            border-radius: 50%;
+            border: 2px solid var(--black-light);
+            display: none;
+        }
+
+        .chat-trigger .unread-dot.show { display: block; }
+
+        /* Admin Messages Panel */
+        .admin-messages-section {
+            background: var(--gray);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .admin-messages-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-messages-section h3 i { color: var(--accent); }
+
+        .conversation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--black-light);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .conversation-item:hover {
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .conversation-item .conv-avatar {
+            width: 44px; height: 44px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--black);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .conversation-item .conv-info { flex: 1; }
+        .conversation-item .conv-info h4 { font-size: 0.9rem; margin-bottom: 3px; }
+        .conversation-item .conv-info p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+
+        .conversation-item .conv-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+            flex-shrink: 0;
+        }
+
+        .conversation-item .conv-unread {
+            width: 20px; height: 20px;
+            background: var(--accent);
+            color: var(--black);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .admin-chat-box {
+            margin-top: 20px;
+            background: var(--black-light);
+            border-radius: 16px;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .admin-chat-box.show { display: flex; }
+
+        .admin-chat-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-chat-header h4 { font-size: 0.95rem; }
+
+        .admin-chat-back {
+            background: none; border: none;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer; font-size: 1rem;
+        }
+
+        .admin-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .admin-chat-input {
+            padding: 12px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-chat-input input {
+            flex: 1;
+            padding: 10px 16px;
+            background: var(--gray);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            color: var(--white);
+            font-size: 0.85rem;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .admin-chat-input input:focus { border-color: var(--accent); }
+
+        .admin-chat-input button {
+            width: 38px; height: 38px;
+            background: var(--accent);
+            color: var(--black);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .chat-panel { width: 100%; border-radius: 0; }
+        }
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -1875,7 +2364,7 @@
                 <span data-i18n="cart_total">Total</span>
                 <span class="total-price" id="cartTotal">0 DA</span>
             </div>
-            <button class="btn-primary" style="width:100%;justify-content:center;" data-i18n="cart_checkout">Passer la commande</button>
+            <button class="btn-primary" style="width:100%;justify-content:center;" onclick="openCheckout()" data-i18n="cart_checkout">Passer la commande</button>
         </div>
     </div>
 
@@ -2342,6 +2831,94 @@
                     </table>
                 </div>
             </div>
+
+            <div class="admin-messages-section">
+                <h3><i class="fas fa-envelope"></i> <span data-i18n="admin_messages">Messages Clients</span></h3>
+                <div class="conversation-list" id="conversationList">
+                    <p style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;" data-i18n="admin_no_messages">Aucun message pour le moment</p>
+                </div>
+                <div class="admin-chat-box" id="adminChatBox">
+                    <div class="admin-chat-header">
+                        <h4 id="adminChatName"></h4>
+                        <button class="admin-chat-back" onclick="closeAdminChat()"><i class="fas fa-arrow-left"></i></button>
+                    </div>
+                    <div class="admin-chat-messages" id="adminChatMessages"></div>
+                    <div class="admin-chat-input">
+                        <input type="text" id="adminChatInput" placeholder="Reponse..." onkeydown="if(event.key==='Enter')sendAdminReply()">
+                        <button onclick="sendAdminReply()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="verifyModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('verifyModal')"><i class="fas fa-times"></i></button>
+            <h2 data-i18n="verify_title">Verification Email</h2>
+            <p data-i18n="verify_subtitle">Nous avons envoye un code a votre email</p>
+            <div class="verify-email-display" id="verifyEmailDisplay"></div>
+            <div class="verify-code-input" id="verifyCodeInputs">
+                <input type="text" maxlength="1" oninput="verifyAutoTab(this, 0)" onkeydown="verifyKeyDown(event, 0)">
+                <input type="text" maxlength="1" oninput="verifyAutoTab(this, 1)" onkeydown="verifyKeyDown(event, 1)">
+                <input type="text" maxlength="1" oninput="verifyAutoTab(this, 2)" onkeydown="verifyKeyDown(event, 2)">
+                <input type="text" maxlength="1" oninput="verifyAutoTab(this, 3)" onkeydown="verifyKeyDown(event, 3)">
+                <input type="text" maxlength="1" oninput="verifyAutoTab(this, 4)" onkeydown="verifyKeyDown(event, 4)">
+                <input type="text" maxlength="1" oninput="verifyAutoTab(this, 5)" onkeydown="verifyKeyDown(event, 5)">
+            </div>
+            <button class="form-submit" onclick="verifyEmailCode()" data-i18n="verify_btn">Verifier</button>
+            <div class="verify-resend">
+                <span data-i18n="verify_resend">Vous n'avez pas recu le code?</span>
+                <a onclick="resendVerifyCode()" data-i18n="verify_resend_btn">Renvoyer</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout / Order Confirmation Modal -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal" style="max-width:520px;">
+            <button class="modal-close" onclick="closeModal('checkoutModal')"><i class="fas fa-times"></i></button>
+            <div id="checkoutStep1">
+                <h2 data-i18n="checkout_title">Confirmer Commande</h2>
+                <div class="order-summary" id="orderSummary"></div>
+                <div class="order-total-row">
+                    <span data-i18n="cart_total">Total</span>
+                    <span id="orderTotalPrice">0 DA</span>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="checkout_name">Nom complet</label>
+                    <input type="text" id="checkoutName" placeholder="Votre nom" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="checkout_phone">Telephone</label>
+                    <input type="tel" id="checkoutPhone" placeholder="+213 5XX XXX XXX" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="checkout_address">Adresse de livraison</label>
+                    <input type="text" id="checkoutAddress" placeholder="Wilaya, commune, rue..." required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="checkout_notes">Notes (optionnel)</label>
+                    <input type="text" id="checkoutNotes" placeholder="Instructions speciales...">
+                </div>
+                <button class="form-submit" onclick="confirmOrder()" data-i18n="checkout_confirm">
+                    <i class="fas fa-check"></i> Confirmer la Commande
+                </button>
+            </div>
+            <div id="checkoutStep2" style="display:none;">
+                <div class="order-success">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <h3 data-i18n="checkout_success_title">Commande Confirmee!</h3>
+                    <p data-i18n="checkout_success_desc">Votre commande a ete enregistree avec succes.</p>
+                    <span class="order-id" id="orderIdDisplay"></span>
+                    <p data-i18n="checkout_success_msg">Contactez-nous pour suivre votre commande:</p>
+                    <button class="btn-primary" style="margin-top:15px;" onclick="openChatFromOrder()" data-i18n="checkout_contact">
+                        <i class="fas fa-comments"></i> Envoyer un Message
+                    </button>
+                    <button class="btn-secondary" style="margin-top:10px;padding:12px 24px;font-size:0.85rem;" onclick="closeModal('checkoutModal')" data-i18n="checkout_continue">
+                        Continuer les achats
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2353,6 +2930,35 @@
             <p data-i18n="email_select_subtitle">Selectionnez l'email que vous souhaitez utiliser sur SAC PRIX CHOC</p>
             <div class="email-selector" id="emailSelectorList"></div>
             <button class="form-submit" style="margin-top:20px;" onclick="confirmEmailSelection()" data-i18n="email_select_confirm">Confirmer</button>
+        </div>
+    </div>
+
+    <!-- Chat Panel -->
+    <button class="chat-trigger" id="chatTrigger" onclick="toggleChat()">
+        <i class="fas fa-comments"></i>
+        <span class="unread-dot" id="chatUnreadDot"></span>
+    </button>
+
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-header-avatar">SPC</div>
+                <div class="chat-header-info">
+                    <h4>SAC PRIX CHOC</h4>
+                    <span data-i18n="chat_online">En ligne</span>
+                </div>
+            </div>
+            <button class="chat-close" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg received">
+                <span data-i18n="chat_welcome">Bienvenue chez SAC PRIX CHOC! Comment puis-je vous aider?</span>
+                <span class="msg-time">--:--</span>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Votre message..." onkeydown="if(event.key==='Enter')sendChatMsg()">
+            <button class="chat-send-btn" onclick="sendChatMsg()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
@@ -2435,7 +3041,35 @@
                 email_type_google: "Compte Google",
                 email_type_facebook: "Compte Facebook",
                 email_type_personal: "Email personnel",
-                email_none_hint: "Aucun email detecte, entrez-en un manuellement"
+                email_none_hint: "Aucun email detecte, entrez-en un manuellement",
+                verify_title: "Verification Email",
+                verify_subtitle: "Nous avons envoye un code a votre email",
+                verify_btn: "Verifier",
+                verify_resend: "Vous n'avez pas recu le code?",
+                verify_resend_btn: "Renvoyer",
+                verify_code_sent: "Code envoye a {email}",
+                verify_code_wrong: "Code incorrect. Reessayez.",
+                verify_success: "Email verifie avec succes!",
+                checkout_title: "Confirmer Commande",
+                checkout_name: "Nom complet",
+                checkout_phone: "Telephone",
+                checkout_address: "Adresse de livraison",
+                checkout_notes: "Notes (optionnel)",
+                checkout_confirm: "Confirmer la Commande",
+                checkout_success_title: "Commande Confirmee!",
+                checkout_success_desc: "Votre commande a ete enregistree avec succes.",
+                checkout_success_msg: "Contactez-nous pour suivre votre commande:",
+                checkout_contact: "Envoyer un Message",
+                checkout_continue: "Continuer les achats",
+                checkout_empty: "Votre panier est vide",
+                chat_online: "En ligne",
+                chat_welcome: "Bienvenue chez SAC PRIX CHOC! Comment puis-je vous aider?",
+                chat_placeholder: "Votre message...",
+                chat_order_prefix: "Bonjour, je souhaite suivre ma commande #",
+                admin_messages: "Messages Clients",
+                admin_no_messages: "Aucun message pour le moment",
+                toast_order_confirmed: "Commande confirmee!",
+                toast_fill_fields: "Veuillez remplir tous les champs obligatoires"
             },
             ar: {
                 nav_home: "الرئيسية", nav_categories: "الفئات", nav_products: "المنتجات",
@@ -2502,7 +3136,35 @@
                 email_type_google: "حساب Google",
                 email_type_facebook: "حساب Facebook",
                 email_type_personal: "بريد شخصي",
-                email_none_hint: "لم يتم اكتشاف بريد، أدخل واحد يدوياً"
+                email_none_hint: "لم يتم اكتشاف بريد، أدخل واحد يدوياً",
+                verify_title: "تحقق من البريد الإلكتروني",
+                verify_subtitle: "أرسلنا كود التحقق إلى بريدك",
+                verify_btn: "تحقق",
+                verify_resend: "لم تتلقى الكود؟",
+                verify_resend_btn: "إعادة الإرسال",
+                verify_code_sent: "تم إرسال الكود إلى {email}",
+                verify_code_wrong: "كود خاطئ. حاول مرة أخرى.",
+                verify_success: "تم التحقق من البريد بنجاح!",
+                checkout_title: "تأكيد الطلب",
+                checkout_name: "الاسم الكامل",
+                checkout_phone: "رقم الهاتف",
+                checkout_address: "عنوان التوصيل",
+                checkout_notes: "ملاحظات (اختياري)",
+                checkout_confirm: "تأكيد الطلب",
+                checkout_success_title: "تم تأكيد الطلب!",
+                checkout_success_desc: "تم تسجيل طلبك بنجاح.",
+                checkout_success_msg: "تواصل معنا لمتابعة طلبك:",
+                checkout_contact: "إرسال رسالة",
+                checkout_continue: "متابعة التسوق",
+                checkout_empty: "سلة التسوق فارغة",
+                chat_online: "متصل",
+                chat_welcome: "مرحباً بك في SAC PRIX CHOC! كيف يمكنني مساعدتك؟",
+                chat_placeholder: "رسالتك...",
+                chat_order_prefix: "مرحباً، أريد متابعة طلبي رقم #",
+                admin_messages: "رسائل العملاء",
+                admin_no_messages: "لا توجد رسائل بعد",
+                toast_order_confirmed: "تم تأكيد الطلب!",
+                toast_fill_fields: "يرجى ملء جميع الحقول المطلوبة"
             }
         };
 
@@ -2511,6 +3173,12 @@
         let currentTheme = 'gold';
         let currentUser = null;
         let cart = [];
+        let verifyCode = '';
+        let verifyEmailTarget = '';
+        let pendingAdminData = null;
+        let conversations = JSON.parse(localStorage.getItem('spc_conversations') || '{}');
+        let currentConversationId = null;
+        let lastOrderId = null;
 
         // ========== SAMPLE PRODUCTS ==========
         let products = [];
@@ -2522,6 +3190,7 @@
             renderProducts();
             renderAdminTable();
             updateAdminStats();
+            renderAdminConversations();
         });
 
         // Particles
@@ -2774,10 +3443,61 @@
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const role = document.getElementById('regRole').value;
+
+            if (role === 'admin') {
+                pendingAdminData = { name, email, role };
+                startEmailVerification(email);
+                return;
+            }
+
             currentUser = { name, email, role, primaryEmail: email };
             closeModal('registerModal');
             onLoginSuccess();
             showToast(translations[currentLang].toast_registered);
+        }
+
+        function startEmailVerification(email) {
+            verifyEmailTarget = email;
+            verifyCode = String(Math.floor(100000 + Math.random() * 900000));
+            const display = document.getElementById('verifyEmailDisplay');
+            display.textContent = email;
+            document.querySelectorAll('#verifyCodeInputs input').forEach(i => i.value = '');
+            closeModal('registerModal');
+            openModal('verifyModal');
+            showToast(translations[currentLang].verify_code_sent.replace('{email}', email));
+        }
+
+        function verifyAutoTab(input, index) {
+            if (input.value.length === 1 && index < 5) {
+                document.querySelectorAll('#verifyCodeInputs input')[index + 1].focus();
+            }
+        }
+
+        function verifyKeyDown(e, index) {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                document.querySelectorAll('#verifyCodeInputs input')[index - 1].focus();
+            }
+        }
+
+        function verifyEmailCode() {
+            const inputs = document.querySelectorAll('#verifyCodeInputs input');
+            const entered = Array.from(inputs).map(i => i.value).join('');
+            if (entered === verifyCode) {
+                if (pendingAdminData) {
+                    currentUser = { ...pendingAdminData, primaryEmail: pendingAdminData.email };
+                    pendingAdminData = null;
+                }
+                closeModal('verifyModal');
+                onLoginSuccess();
+                showToast(translations[currentLang].verify_success);
+            } else {
+                showToast(translations[currentLang].verify_code_wrong);
+            }
+        }
+
+        function resendVerifyCode() {
+            verifyCode = String(Math.floor(100000 + Math.random() * 900000));
+            showToast(translations[currentLang].verify_code_sent.replace('{email}', verifyEmailTarget));
         }
 
         function onLoginSuccess() {
@@ -2787,11 +3507,14 @@
                 btn.onclick = () => {
                     document.getElementById('adminPanel').classList.toggle('show');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                    renderAdminConversations();
                 };
                 document.getElementById('adminPanel').classList.add('show');
+                renderAdminConversations();
             } else {
                 btn.textContent = currentUser.name;
                 btn.onclick = logout;
+                document.getElementById('chatTrigger').classList.add('show');
             }
         }
 
@@ -2801,6 +3524,8 @@
             btn.textContent = translations[currentLang].nav_login;
             btn.onclick = () => openModal('loginModal');
             document.getElementById('adminPanel').classList.remove('show');
+            document.getElementById('chatTrigger').classList.remove('show');
+            document.getElementById('chatPanel').classList.remove('show');
         }
 
         // Product Modal
@@ -2887,6 +3612,239 @@
             document.getElementById('adminProductCount').textContent = products.length;
             const revenue = products.reduce((sum, p) => sum + p.price, 0);
             document.getElementById('adminRevenue').textContent = revenue.toLocaleString() + ' DA';
+        }
+
+        // ========== CHECKOUT ==========
+        function openCheckout() {
+            if (cart.length === 0) {
+                showToast(translations[currentLang].checkout_empty);
+                return;
+            }
+            if (!currentUser) {
+                openModal('loginModal');
+                return;
+            }
+            document.getElementById('checkoutStep1').style.display = 'block';
+            document.getElementById('checkoutStep2').style.display = 'none';
+
+            const summary = document.getElementById('orderSummary');
+            summary.innerHTML = '<h3>' + (translations[currentLang].cart_title || 'Commande') + '</h3>' +
+                cart.map(c => `
+                    <div class="order-item">
+                        <img src="${c.image}" alt="${c.name}">
+                        <div class="order-item-info">
+                            <h4>${c.name}</h4>
+                            <span>x${c.qty}</span>
+                        </div>
+                        <span class="order-item-price">${(c.price * c.qty).toLocaleString()} DA</span>
+                    </div>
+                `).join('');
+
+            const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
+            document.getElementById('orderTotalPrice').textContent = total.toLocaleString() + ' DA';
+            toggleCart();
+            openModal('checkoutModal');
+        }
+
+        function confirmOrder() {
+            const name = document.getElementById('checkoutName').value;
+            const phone = document.getElementById('checkoutPhone').value;
+            const address = document.getElementById('checkoutAddress').value;
+
+            if (!name || !phone || !address) {
+                showToast(translations[currentLang].toast_fill_fields);
+                return;
+            }
+
+            lastOrderId = 'SPC-' + Date.now().toString().slice(-8);
+
+            const convId = 'order_' + lastOrderId;
+            const notes = document.getElementById('checkoutNotes').value;
+            const orderItems = cart.map(c => `${c.name} x${c.qty} - ${(c.price * c.qty).toLocaleString()} DA`).join('\n');
+            const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
+
+            conversations[convId] = {
+                userName: currentUser.name || currentUser.email,
+                userEmail: currentUser.email,
+                messages: [
+                    { from: 'user', text: `${translations[currentLang].chat_order_prefix}${lastOrderId}\n\n${orderItems}\n\nTotal: ${total.toLocaleString()} DA\n\nNom: ${name}\nTel: ${phone}\nAdresse: ${address}${notes ? '\nNotes: ' + notes : ''}`, time: new Date().toLocaleTimeString() }
+                ]
+            };
+            saveConversations();
+
+            document.getElementById('orderIdDisplay').textContent = '#' + lastOrderId;
+            document.getElementById('checkoutStep1').style.display = 'none';
+            document.getElementById('checkoutStep2').style.display = 'block';
+
+            cart = [];
+            updateCart();
+            showToast(translations[currentLang].toast_order_confirmed);
+        }
+
+        function openChatFromOrder() {
+            closeModal('checkoutModal');
+            const convId = 'order_' + lastOrderId;
+            openUserChat();
+            loadChatMessages(convId);
+        }
+
+        // ========== USER CHAT ==========
+        function openUserChat() {
+            document.getElementById('chatPanel').classList.add('show');
+            document.getElementById('chatTrigger').classList.remove('show');
+        }
+
+        function toggleChat() {
+            const panel = document.getElementById('chatPanel');
+            panel.classList.toggle('show');
+            document.getElementById('chatTrigger').classList.remove('show');
+            if (panel.classList.contains('show')) {
+                loadChatMessages('general');
+            }
+        }
+
+        function loadChatMessages(convId) {
+            if (!conversations[convId]) {
+                conversations[convId] = {
+                    userName: currentUser ? currentUser.name : 'Visiteur',
+                    userEmail: currentUser ? currentUser.email : '',
+                    messages: [{ from: 'system', text: translations[currentLang].chat_welcome, time: new Date().toLocaleTimeString() }]
+                };
+                saveConversations();
+            }
+
+            currentConversationId = convId;
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = conversations[convId].messages.map(m => `
+                <div class="chat-msg ${m.from === 'user' ? 'sent' : m.from === 'system' ? 'received' : 'received'}">
+                    ${m.text.replace(/\n/g, '<br>')}
+                    <span class="msg-time">${m.time}</span>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendChatMsg() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            if (!currentUser) { openModal('loginModal'); return; }
+
+            if (!currentConversationId) currentConversationId = 'general';
+            if (!conversations[currentConversationId]) {
+                conversations[currentConversationId] = {
+                    userName: currentUser.name,
+                    userEmail: currentUser.email,
+                    messages: []
+                };
+            }
+
+            conversations[currentConversationId].messages.push({
+                from: 'user',
+                text: text,
+                time: new Date().toLocaleTimeString()
+            });
+            saveConversations();
+
+            const container = document.getElementById('chatMessages');
+            container.innerHTML += `<div class="chat-msg sent">${text}<span class="msg-time">${new Date().toLocaleTimeString()}</span></div>`;
+            container.scrollTop = container.scrollHeight;
+            input.value = '';
+
+            setTimeout(() => {
+                const replies = [
+                    currentLang === 'ar' ? 'شكلاً لرسالتك! سنرد عليك قريباً.' : 'Merci pour votre message! Nous vous repondrons bientot.',
+                    currentLang === 'ar' ? 'تم استلام رسالتك. فريقنا يراجعها الآن.' : 'Message recu! Notre equipe l\'examine.',
+                    currentLang === 'ar' ? 'نعم، يمكننا مساعدتك في هذا. هل تريد معرفة المزيد؟' : 'Oui, nous pouvons vous aider avec cela. Voulez-vous en savoir plus?'
+                ];
+                const reply = replies[Math.floor(Math.random() * replies.length)];
+
+                conversations[currentConversationId].messages.push({
+                    from: 'admin',
+                    text: reply,
+                    time: new Date().toLocaleTimeString()
+                });
+                saveConversations();
+
+                container.innerHTML += `<div class="chat-msg received">${reply}<span class="msg-time">${new Date().toLocaleTimeString()}</span></div>`;
+                container.scrollTop = container.scrollHeight;
+            }, 1200);
+
+            renderAdminConversations();
+        }
+
+        // ========== ADMIN MESSAGES ==========
+        function renderAdminConversations() {
+            const list = document.getElementById('conversationList');
+            const keys = Object.keys(conversations);
+            if (keys.length === 0) {
+                list.innerHTML = `<p style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;">${translations[currentLang].admin_no_messages}</p>`;
+                return;
+            }
+
+            list.innerHTML = keys.map(k => {
+                const c = conversations[k];
+                const lastMsg = c.messages[c.messages.length - 1];
+                const initials = (c.userName || 'U').substring(0, 2).toUpperCase();
+                const unread = c.messages.filter(m => m.from === 'user').length > 0 ? 1 : 0;
+                return `
+                    <div class="conversation-item" onclick="openAdminChat('${k}')">
+                        <div class="conv-avatar">${initials}</div>
+                        <div class="conv-info">
+                            <h4>${c.userName || 'Utilisateur'}</h4>
+                            <p>${lastMsg ? lastMsg.text.substring(0, 50) + '...' : ''}</p>
+                        </div>
+                        <span class="conv-time">${lastMsg ? lastMsg.time : ''}</span>
+                        ${unread ? '<span class="conv-unread">!</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openAdminChat(convId) {
+            currentConversationId = convId;
+            document.getElementById('conversationList').style.display = 'none';
+            const box = document.getElementById('adminChatBox');
+            box.classList.add('show');
+            document.getElementById('adminChatName').textContent = conversations[convId].userName || 'Utilisateur';
+
+            const container = document.getElementById('adminChatMessages');
+            container.innerHTML = (conversations[convId].messages || []).map(m => `
+                <div class="chat-msg ${m.from === 'user' ? 'sent' : 'received'}" style="${m.from === 'user' ? 'background:#333;color:#fff;align-self:flex-start;border-bottom-left-radius:4px;' : ''}">
+                    ${m.text.replace(/\n/g, '<br>')}
+                    <span class="msg-time">${m.time}</span>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function closeAdminChat() {
+            document.getElementById('adminChatBox').classList.remove('show');
+            document.getElementById('conversationList').style.display = '';
+            currentConversationId = null;
+            renderAdminConversations();
+        }
+
+        function sendAdminReply() {
+            const input = document.getElementById('adminChatInput');
+            const text = input.value.trim();
+            if (!text || !currentConversationId) return;
+
+            conversations[currentConversationId].messages.push({
+                from: 'admin',
+                text: text,
+                time: new Date().toLocaleTimeString()
+            });
+            saveConversations();
+
+            const container = document.getElementById('adminChatMessages');
+            container.innerHTML += `<div class="chat-msg received">${text}<span class="msg-time">${new Date().toLocaleTimeString()}</span></div>`;
+            container.scrollTop = container.scrollHeight;
+            input.value = '';
+        }
+
+        function saveConversations() {
+            localStorage.setItem('spc_conversations', JSON.stringify(conversations));
         }
 
         // Image Preview
