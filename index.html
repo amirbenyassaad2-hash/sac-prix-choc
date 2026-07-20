@@ -6,6 +6,7 @@
     <title>SAC PRIX CHOC - Bolsa de Mano</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         :root {
             --gold: #D4AF37;
@@ -2850,6 +2851,56 @@
                     </div>
                 </div>
             </div>
+
+            <div class="admin-section" style="margin-top:20px;">
+                <h3><i class="fas fa-cog"></i> <span data-i18n="admin_email_settings">Parametres Email</span></h3>
+                <div class="admin-form-grid">
+                    <div class="form-group full-width">
+                        <label data-i18n="admin_email_label">Email du magasin (notifications)</label>
+                        <input type="email" id="adminEmailInput" value="" placeholder="admin@sacprixchoc.dz" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label data-i18n="admin_emailjs_key">EmailJS Public Key</label>
+                        <input type="text" id="emailjsKeyInput" placeholder="Votre EmailJS Public Key" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label data-i18n="admin_emailjs_service">EmailJS Service ID</label>
+                        <input type="text" id="emailjsServiceInput" placeholder="Ex: service_xxxxxxx" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label data-i18n="admin_emailjs_template_order">Template Commande (ID)</label>
+                        <input type="text" id="emailjsTemplateOrderInput" placeholder="Ex: template_xxxxxxx" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label data-i18n="admin_emailjs_template_msg">Template Message (ID)</label>
+                        <input type="text" id="emailjsTemplateMsgInput" placeholder="Ex: template_xxxxxxx" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="full-width" style="display:flex;gap:10px;">
+                        <button class="form-submit" onclick="saveEmailSettings()" data-i18n="admin_save_settings">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <button class="btn-secondary" onclick="testEmail()" style="padding:14px 24px;">
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="admin_test_email">Tester Email</span>
+                        </button>
+                    </div>
+                    <div class="full-width" id="emailStatus" style="margin-top:10px;font-size:0.85rem;"></div>
+                </div>
+            </div>
+                <div class="conversation-list" id="conversationList">
+                    <p style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;" data-i18n="admin_no_messages">Aucun message pour le moment</p>
+                </div>
+                <div class="admin-chat-box" id="adminChatBox">
+                    <div class="admin-chat-header">
+                        <h4 id="adminChatName"></h4>
+                        <button class="admin-chat-back" onclick="closeAdminChat()"><i class="fas fa-arrow-left"></i></button>
+                    </div>
+                    <div class="admin-chat-messages" id="adminChatMessages"></div>
+                    <div class="admin-chat-input">
+                        <input type="text" id="adminChatInput" placeholder="Reponse..." onkeydown="if(event.key==='Enter')sendAdminReply()">
+                        <button onclick="sendAdminReply()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="modal-overlay" id="verifyModal">
@@ -3070,7 +3121,15 @@
                 admin_messages: "Messages Clients",
                 admin_no_messages: "Aucun message pour le moment",
                 toast_order_confirmed: "Commande confirmee!",
-                toast_fill_fields: "Veuillez remplir tous les champs obligatoires"
+                toast_fill_fields: "Veuillez remplir tous les champs obligatoires",
+                admin_email_settings: "Parametres Email",
+                admin_email_label: "Email du magasin (notifications)",
+                admin_emailjs_key: "EmailJS Public Key",
+                admin_emailjs_service: "EmailJS Service ID",
+                admin_emailjs_template_order: "Template Commande (ID)",
+                admin_emailjs_template_msg: "Template Message (ID)",
+                admin_save_settings: "Enregistrer",
+                admin_test_email: "Tester Email"
             },
             ar: {
                 nav_home: "الرئيسية", nav_categories: "الفئات", nav_products: "المنتجات",
@@ -3165,7 +3224,15 @@
                 admin_messages: "رسائل العملاء",
                 admin_no_messages: "لا توجد رسائل بعد",
                 toast_order_confirmed: "تم تأكيد الطلب!",
-                toast_fill_fields: "يرجى ملء جميع الحقول المطلوبة"
+                toast_fill_fields: "يرجى ملء جميع الحقول المطلوبة",
+                admin_email_settings: "إعدادات البريد الإلكتروني",
+                admin_email_label: "بريد المتجر (الإشعارات)",
+                admin_emailjs_key: "مفتاح EmailJS العام",
+                admin_emailjs_service: "معرف خدمة EmailJS",
+                admin_emailjs_template_order: "قالب الطلب (ID)",
+                admin_emailjs_template_msg: "قالب الرسالة (ID)",
+                admin_save_settings: "حفظ الإعدادات",
+                admin_test_email: "اختبار البريد"
             }
         };
 
@@ -3181,12 +3248,38 @@
         let currentConversationId = null;
         let lastOrderId = null;
 
+        // ========== EMAILJS CONFIG ==========
+        const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
+        const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
+        const EMAILJS_TEMPLATE_ORDER = 'YOUR_ORDER_TEMPLATE_ID';
+        const EMAILJS_TEMPLATE_MSG = 'YOUR_MSG_TEMPLATE_ID';
+        let adminEmail = localStorage.getItem('spc_admin_email') || 'admin@sacprixchoc.dz';
+        let emailjsReady = false;
+
+        function initEmailJS() {
+            try {
+                if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+                    emailjs.init(EMAILJS_PUBLIC_KEY);
+                    emailjsReady = true;
+                }
+            } catch (e) { console.log('EmailJS not configured yet'); }
+        }
+
+        function sendEmailNotification(templateId, params) {
+            if (!emailjsReady) {
+                console.log('Email would be sent:', params);
+                return Promise.resolve();
+            }
+            return emailjs.send(EMAILJS_SERVICE_ID, templateId, params);
+        }
+
         // ========== SAMPLE PRODUCTS ==========
         let products = [];
 
         // ========== INIT ==========
         window.addEventListener('load', () => {
             setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1500);
+            initEmailJS();
             createParticles();
             renderProducts();
             renderAdminTable();
@@ -3517,6 +3610,7 @@
                     document.getElementById('adminPanel').classList.toggle('show');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     renderAdminConversations();
+                    populateEmailForm();
                 };
                 document.getElementById('adminPanel').classList.add('show');
                 renderAdminConversations();
@@ -3611,6 +3705,79 @@
                 );
             }
         }
+
+        // ========== EMAIL SETTINGS ==========
+        function loadEmailSettings() {
+            const saved = JSON.parse(localStorage.getItem('spc_email_settings') || '{}');
+            if (saved.adminEmail) adminEmail = saved.adminEmail;
+            if (saved.emailjsPublicKey) EMAILJS_PUBLIC_KEY = saved.emailjsPublicKey;
+            if (saved.emailjsServiceId) EMAILJS_SERVICE_ID = saved.emailjsServiceId;
+            if (saved.emailjsTemplateOrder) EMAILJS_TEMPLATE_ORDER = saved.emailjsTemplateOrder;
+            if (saved.emailjsTemplateMsg) EMAILJS_TEMPLATE_MSG = saved.emailjsTemplateMsg;
+            if (saved.emailjsPublicKey) initEmailJS();
+        }
+
+        function populateEmailForm() {
+            const saved = JSON.parse(localStorage.getItem('spc_email_settings') || '{}');
+            const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+            setVal('adminEmailInput', saved.adminEmail || adminEmail);
+            setVal('emailjsKeyInput', saved.emailjsPublicKey);
+            setVal('emailjsServiceInput', saved.emailjsServiceId);
+            setVal('emailjsTemplateOrderInput', saved.emailjsTemplateOrder);
+            setVal('emailjsTemplateMsgInput', saved.emailjsTemplateMsg);
+        }
+
+        function saveEmailSettings() {
+            const settings = {
+                adminEmail: document.getElementById('adminEmailInput').value || adminEmail,
+                emailjsPublicKey: document.getElementById('emailjsKeyInput').value,
+                emailjsServiceId: document.getElementById('emailjsServiceInput').value,
+                emailjsTemplateOrder: document.getElementById('emailjsTemplateOrderInput').value,
+                emailjsTemplateMsg: document.getElementById('emailjsTemplateMsgInput').value
+            };
+            localStorage.setItem('spc_email_settings', JSON.stringify(settings));
+            adminEmail = settings.adminEmail;
+            if (settings.emailjsPublicKey) EMAILJS_PUBLIC_KEY = settings.emailjsPublicKey;
+            if (settings.emailjsServiceId) EMAILJS_SERVICE_ID = settings.emailjsServiceId;
+            if (settings.emailjsTemplateOrder) EMAILJS_TEMPLATE_ORDER = settings.emailjsTemplateOrder;
+            if (settings.emailjsTemplateMsg) EMAILJS_TEMPLATE_MSG = settings.emailjsTemplateMsg;
+            initEmailJS();
+            const status = document.getElementById('emailStatus');
+            status.innerHTML = '<span style="color:#2ECC71;"><i class="fas fa-check-circle"></i> ' +
+                (currentLang === 'ar' ? 'تم حفظ الإعدادات!' : 'Parametres enregistres!') + '</span>';
+            showToast(currentLang === 'ar' ? 'تم حفظ إعدادات البريد!' : 'Parametres email sauvegardes!');
+        }
+
+        function testEmail() {
+            const status = document.getElementById('emailStatus');
+            if (!emailjsReady) {
+                status.innerHTML = '<span style="color:#E74C3C;"><i class="fas fa-exclamation-triangle"></i> ' +
+                    (currentLang === 'ar' ? 'الإعدادات غير مكتملة - أدخل المفاتيح أولاً' : 'Configuration incomplete - remplissez les cles d\'abord') + '</span>';
+                return;
+            }
+            status.innerHTML = '<span style="color:var(--accent);"><i class="fas fa-spinner fa-spin"></i> ' +
+                (currentLang === 'ar' ? 'جاري الإرسال...' : 'Envoi en cours...') + '</span>';
+            sendEmailNotification(EMAILJS_TEMPLATE_ORDER, {
+                from_name: 'SAC PRIX CHOC',
+                from_email: adminEmail,
+                order_id: 'TEST-0001',
+                order_items: 'Sac Chic Premium x1 - 4,500 DA',
+                total: '4,500 DA',
+                client_name: 'Client Test',
+                client_phone: '0555000000',
+                client_address: 'Alger, Test',
+                notes: 'Email de test',
+                to_email: adminEmail
+            }).then(() => {
+                status.innerHTML = '<span style="color:#2ECC71;"><i class="fas fa-check-circle"></i> ' +
+                    (currentLang === 'ar' ? 'تم الإرسال بنجاح! تحقق من بريدك' : 'Email envoye! Verifiez votre boite') + '</span>';
+            }).catch((err) => {
+                status.innerHTML = '<span style="color:#E74C3C;"><i class="fas fa-times-circle"></i> ' +
+                    (currentLang === 'ar' ? 'فشل الإرسال - تحقق من الإعدادات' : 'Echec - verifiez vos parametres') + '</span>';
+            });
+        }
+
+        loadEmailSettings();
 
         function renderAdminTable() {
             const tbody = document.getElementById('adminTableBody');
@@ -3709,6 +3876,19 @@
             cart = [];
             updateCart();
             showToast(translations[currentLang].toast_order_confirmed);
+
+            sendEmailNotification(EMAILJS_TEMPLATE_ORDER, {
+                from_name: currentUser.name || currentUser.email,
+                from_email: currentUser.email,
+                order_id: lastOrderId,
+                order_items: orderItems,
+                total: total.toLocaleString() + ' DA',
+                client_name: name,
+                client_phone: phone,
+                client_address: address,
+                notes: notes || '',
+                to_email: adminEmail
+            });
         }
 
         function openChatFromOrder() {
@@ -3801,6 +3981,14 @@
             }, 1200);
 
             renderAdminConversations();
+
+            sendEmailNotification(EMAILJS_TEMPLATE_MSG, {
+                from_name: currentUser.name,
+                from_email: currentUser.email,
+                message: text,
+                to_email: adminEmail,
+                order_id: currentConversationId.startsWith('order_') ? currentConversationId.replace('order_', '') : 'General'
+            });
         }
 
         // ========== ADMIN MESSAGES ==========
