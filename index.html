@@ -2824,6 +2824,7 @@
                                 <th data-i18n="admin_th_name">Nom</th>
                                 <th data-i18n="admin_th_price">Prix</th>
                                 <th data-i18n="admin_th_category">Categorie</th>
+                                <th data-i18n="admin_th_status">Statut</th>
                                 <th data-i18n="admin_th_actions">Actions</th>
                             </tr>
                         </thead>
@@ -3029,7 +3030,7 @@
                 admin_image_text: "Cliquez pour televerser une image", admin_add_btn: "Ajouter le Produit",
                 admin_manage: "Gerer les Produits",
                 admin_th_image: "Image", admin_th_name: "Nom", admin_th_price: "Prix",
-                admin_th_category: "Categorie", admin_th_actions: "Actions",
+                admin_th_category: "Categorie", admin_th_status: "Statut", admin_th_actions: "Actions",
                 detail_size: "Taille", detail_addcart: "<i class='fas fa-shopping-bag'></i> Ajouter au Panier",
                 toast_added: "Produit ajoute au panier!", toast_registered: "Compte cree avec succes!",
                 toast_login: "Connexion reussie!", toast_social: "Connexion via {provider} reussie!",
@@ -3124,7 +3125,7 @@
                 admin_image_text: "انقر لرفع صورة", admin_add_btn: "إضافة المنتج",
                 admin_manage: "إدارة المنتجات",
                 admin_th_image: "الصورة", admin_th_name: "الاسم", admin_th_price: "السعر",
-                admin_th_category: "الفئة", admin_th_actions: "الإجراءات",
+                admin_th_category: "الفئة", admin_th_status: "الحالة", admin_th_actions: "الإجراءات",
                 detail_size: "المقاس", detail_addcart: "<i class='fas fa-shopping-bag'></i> أضف إلى السلة",
                 toast_added: "تمت إضافة المنتج إلى السلة!", toast_registered: "تم إنشاء الحساب بنجاح!",
                 toast_login: "تم تسجيل الدخول بنجاح!", toast_social: "تم تسجيل الدخول عبر {provider} بنجاح!",
@@ -3238,7 +3239,15 @@
         // Products
         function renderProducts(filter = 'all') {
             const grid = document.getElementById('productsGrid');
-            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+            const visibleProducts = currentUser && currentUser.role === 'admin'
+                ? products
+                : products.filter(p => p.published);
+            const filtered = filter === 'all' ? visibleProducts : visibleProducts.filter(p => p.category === filter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<p style="text-align:center;color:rgba(255,255,255,0.4);padding:60px 0;grid-column:1/-1;">${currentLang === 'ar' ? 'لا توجد منتجات متاحة' : 'Aucun produit disponible'}</p>`;
+                return;
+            }
 
             grid.innerHTML = filtered.map(p => `
                 <div class="product-card" onclick="openProductModal(${p.id})">
@@ -3564,7 +3573,7 @@
             }
 
             products.push({
-                id: Date.now(), name, brand, price, category, badge, rating, desc, image
+                id: Date.now(), name, brand, price, category, badge, rating, desc, image, published: false
             });
 
             renderProducts();
@@ -3590,6 +3599,19 @@
             showToast(translations[currentLang].toast_product_deleted);
         }
 
+        function togglePublish(id) {
+            const p = products.find(pr => pr.id === id);
+            if (p) {
+                p.published = !p.published;
+                renderProducts();
+                renderAdminTable();
+                showToast(p.published
+                    ? (currentLang === 'ar' ? 'تم نشر المنتج!' : 'Produit publie!')
+                    : (currentLang === 'ar' ? 'تم إخفاء المنتج!' : 'Produit masque!')
+                );
+            }
+        }
+
         function renderAdminTable() {
             const tbody = document.getElementById('adminTableBody');
             tbody.innerHTML = products.map(p => `
@@ -3599,8 +3621,16 @@
                     <td style="color:var(--accent);font-weight:600;">${p.price.toLocaleString()} DA</td>
                     <td>${p.category}</td>
                     <td>
+                        <span style="padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;${p.published ? 'background:rgba(46,204,113,0.15);color:#2ECC71;' : 'background:rgba(231,76,60,0.15);color:#E74C3C;'}">
+                            ${p.published ? (currentLang === 'ar' ? 'منشور' : 'Publie') : (currentLang === 'ar' ? 'مخفي' : 'Masque')}
+                        </span>
+                    </td>
+                    <td>
                         <div class="table-actions">
-                            <button class="edit-btn" onclick="openProductModal(${p.id})"><i class="fas fa-eye"></i></button>
+                            <button class="edit-btn" onclick="togglePublish(${p.id})" title="${p.published ? 'Masquer' : 'Publier'}">
+                                <i class="fas fa-${p.published ? 'eye-slash' : 'eye'}"></i>
+                            </button>
+                            <button class="edit-btn" onclick="openProductModal(${p.id})"><i class="fas fa-search"></i></button>
                             <button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
