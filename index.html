@@ -6,7 +6,6 @@
     <title>SAC PRIX CHOC - Bolsa de Mano</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         :root {
@@ -2352,7 +2351,7 @@
                 <span class="cart-badge" id="cartCount">0</span>
             </div>
 
-            <button class="auth-btn" onclick="openLoginWithDetection()" id="authBtn" data-i18n="nav_login">Connexion</button>
+            <button class="auth-btn" onclick="openModal('authModal');showAuthForm('choice');" id="authBtn" data-i18n="nav_login">Connexion</button>
         </div>
     </nav>
 
@@ -2615,151 +2614,78 @@
         </div>
     </footer>
 
-    <!-- Auto-Detect Email Modal -->
-    <div class="modal-overlay" id="autoDetectModal">
-        <div class="modal" style="max-width:440px;">
-            <button class="modal-close" onclick="closeModal('autoDetectModal')"><i class="fas fa-times"></i></button>
-            <div style="text-align:center;margin-bottom:24px;">
-                <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem;">
-                    <i class="fas fa-mobile-alt"></i>
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal" style="max-width:420px;">
+            <button class="modal-close" onclick="closeModal('authModal')"><i class="fas fa-times"></i></button>
+
+            <!-- Choice Screen -->
+            <div id="authChoice">
+                <div style="text-align:center;margin-bottom:28px;">
+                    <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 data-i18n="login_title">Bienvenue</h2>
+                    <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin-top:8px;" data-i18n="login_subtitle">Connectez-vous ou creez un compte</p>
                 </div>
-                <h2 data-i18n="detect_title">Selectionnez votre email</h2>
-                <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin-top:8px;" data-i18n="detect_subtitle">Emails detectes sur cet appareil</p>
-            </div>
-
-            <div id="autoDetectEmailsList" style="margin-bottom:16px;"></div>
-
-            <div id="autoDetectLoading" style="text-align:center;padding:20px;display:none;">
-                <div class="spinner" style="width:30px;height:30px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;"></div>
-                <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;" data-i18n="detect_scanning">Detection des emails en cours...</p>
-            </div>
-
-            <form id="autofillTriggerForm" style="position:absolute;left:-9999px;top:-9999px;opacity:0;" autocomplete="on">
-                <input type="email" name="email" autocomplete="email" id="hiddenEmailTrigger">
-                <input type="text" name="username" autocomplete="username" id="hiddenUsernameTrigger">
-                <input type="password" name="password" autocomplete="current-password">
-            </form>
-
-            <div class="divider"><span data-i18n="login_or">ou</span></div>
-
-            <form onsubmit="event.preventDefault(); manualEmailLogin();" style="margin-bottom:12px;">
-                <input type="email" id="autoDetectEmailInput" autocomplete="email" username="email" name="email"
-                    placeholder="Tapez ou selectionnez votre email..."
-                    style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;"
-                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
-            </form>
-
-            <button class="form-submit" onclick="manualEmailLogin()" style="width:100%;" data-i18n="detect_continue">
-                <i class="fas fa-arrow-right"></i> Continuer
-            </button>
-
-            <div style="text-align:center;margin-top:16px;">
-                <a href="#" onclick="closeModal('autoDetectModal');openModal('loginModal')" style="color:rgba(255,255,255,0.4);font-size:0.8rem;text-decoration:none;" data-i18n="detect_more_options">
-                    Plus d'options de connexion
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('loginModal')"><i class="fas fa-times"></i></button>
-            <h2 data-i18n="login_title">Connexion</h2>
-            <p data-i18n="login_subtitle">Connectez-vous pour acceder a votre compte</p>
-
-            <div id="detectedEmailsSection" style="display:none;margin-bottom:20px;">
-                <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">
-                    <i class="fas fa-mobile-alt"></i> <span data-i18n="login_device_emails">Emails detectes sur cet appareil</span>
-                </div>
-                <div id="detectedEmailsList"></div>
-            </div>
-
-            <div class="social-login">
-                <button class="social-login-btn" onclick="socialLogin('Google')">
-                    <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                    <span data-i18n="login_google">Continuer avec Google</span>
+                <button class="form-submit" onclick="showAuthForm('login')" style="width:100%;margin-bottom:12px;">
+                    <i class="fas fa-sign-in-alt"></i> <span data-i18n="login_submit">Se connecter</span>
                 </button>
-                <button class="social-login-btn" onclick="socialLogin('Facebook')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                    <span data-i18n="login_facebook">Continuer avec Facebook</span>
+                <button class="btn-secondary" onclick="showAuthForm('register')" style="width:100%;padding:14px;font-size:0.95rem;">
+                    <i class="fas fa-user-plus"></i> <span data-i18n="reg_title">Creer un Compte</span>
                 </button>
             </div>
 
-            <div class="divider"><span data-i18n="login_or">ou</span></div>
-
-            <form onsubmit="event.preventDefault(); loginWithEmail();">
-                <div class="form-group">
-                    <label data-i18n="login_email">Email</label>
-                    <input type="email" placeholder="votre@email.com" id="loginEmail" required autocomplete="email">
+            <!-- Login Form -->
+            <div id="authLoginForm" style="display:none;">
+                <h2 data-i18n="login_title2">Connexion</h2>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:20px;" data-i18n="login_subtitle2">Entrez vos informations</p>
+                <form onsubmit="event.preventDefault(); doLogin();">
+                    <div class="form-group">
+                        <label data-i18n="login_email">Email</label>
+                        <input type="email" placeholder="votre@email.com" id="loginEmail" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="login_password">Mot de passe</label>
+                        <input type="password" placeholder="••••••••" id="loginPassword" required autocomplete="current-password">
+                    </div>
+                    <div id="loginError" style="color:#E74C3C;font-size:0.85rem;margin-bottom:12px;display:none;"></div>
+                    <button type="submit" class="form-submit" style="width:100%;">
+                        <i class="fas fa-sign-in-alt"></i> <span data-i18n="login_submit">Se connecter</span>
+                    </button>
+                </form>
+                <div class="form-footer">
+                    <span data-i18n="login_no_account">Pas de compte?</span>
+                    <a href="#" onclick="showAuthForm('register')" data-i18n="login_register">Creer un compte</a>
                 </div>
-                <div class="form-group">
-                    <label data-i18n="login_password">Mot de passe</label>
-                    <input type="password" placeholder="••••••••" id="loginPassword" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="form-submit" data-i18n="login_submit">Se connecter</button>
-            </form>
-
-            <div class="form-footer">
-                <span data-i18n="login_no_account">Pas de compte?</span>
-                <a href="#" onclick="closeModal('loginModal');openModal('registerModal')" data-i18n="login_register">Creer un compte</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div class="modal-overlay" id="registerModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('registerModal')"><i class="fas fa-times"></i></button>
-            <h2 data-i18n="reg_title">Creer un Compte</h2>
-            <p data-i18n="reg_subtitle">Rejoignez SAC PRIX CHOC</p>
-
-            <div id="regDetectedEmailsSection" style="display:none;margin-bottom:20px;">
-                <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">
-                    <i class="fas fa-mobile-alt"></i> <span data-i18n="login_device_emails">Emails detectes sur cet appareil</span>
-                </div>
-                <div id="regDetectedEmailsList"></div>
             </div>
 
-            <div class="social-login">
-                <button class="social-login-btn" onclick="socialLogin('Google')">
-                    <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                    <span data-i18n="login_google">Continuer avec Google</span>
-                </button>
-                <button class="social-login-btn" onclick="socialLogin('Facebook')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                    <span data-i18n="login_facebook">Continuer avec Facebook</span>
-                </button>
-            </div>
-
-            <div class="divider"><span data-i18n="login_or">ou</span></div>
-
-            <form onsubmit="event.preventDefault(); registerUser();">
-                <div class="form-group">
-                    <label data-i18n="reg_name">Nom Complet</label>
-                    <input type="text" placeholder="Votre nom" id="regName" required>
+            <!-- Register Form -->
+            <div id="authRegisterForm" style="display:none;">
+                <h2 data-i18n="reg_title2">Creer un Compte</h2>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:20px;" data-i18n="reg_subtitle2">Rejoignez SAC PRIX CHOC</p>
+                <form onsubmit="event.preventDefault(); doRegister();">
+                    <div class="form-group">
+                        <label data-i18n="reg_email">Email</label>
+                        <input type="email" placeholder="votre@email.com" id="regEmail" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="reg_password">Mot de passe</label>
+                        <input type="password" placeholder="••••••••" id="regPassword" required autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="reg_confirm_password">Confirmer le mot de passe</label>
+                        <input type="password" placeholder="••••••••" id="regConfirmPassword" required autocomplete="new-password">
+                    </div>
+                    <div id="regError" style="color:#E74C3C;font-size:0.85rem;margin-bottom:12px;display:none;"></div>
+                    <button type="submit" class="form-submit" style="width:100%;">
+                        <i class="fas fa-user-plus"></i> <span data-i18n="reg_submit">Creer le compte</span>
+                    </button>
+                </form>
+                <div class="form-footer">
+                    <span data-i18n="login_has_account">Deja un compte?</span>
+                    <a href="#" onclick="showAuthForm('login')" data-i18n="login_link">Se connecter</a>
                 </div>
-                <div class="form-group">
-                    <label data-i18n="reg_email">Email</label>
-                    <input type="email" placeholder="votre@email.com" id="regEmail" required autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="reg_password">Mot de passe</label>
-                    <input type="password" placeholder="••••••••" id="regPassword" required autocomplete="new-password">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="reg_role">Votre Role</label>
-                    <select id="regRole">
-                        <option value="customer" data-i18n="role_customer">Client</option>
-                        <option value="admin" data-i18n="role_admin">Administrateur</option>
-                    </select>
-                </div>
-                <button type="submit" class="form-submit" data-i18n="reg_submit">Creer le compte</button>
-            </form>
-
-            <div class="form-footer">
-                <span data-i18n="login_has_account">Deja un compte?</span>
-                <a href="#" onclick="closeModal('registerModal');openModal('loginModal')" data-i18n="login_link">Se connecter</a>
             </div>
         </div>
     </div>
@@ -3127,12 +3053,17 @@
                 footer_legal: "Legal", footer_privacy: "Confidentialite", footer_terms: "Conditions", footer_returns: "Retours", footer_warranty: "Garantie",
                 footer_contact_title: "Contact", footer_address: "Alger, Algerie", footer_rights: "Tous droits reserves.", footer_currency: "Prix affiches en Dinars Algeriens (DA)",
                 cart_title: "Panier", cart_empty: "Votre panier est vide", cart_total: "Total", cart_checkout: "Passer la commande",
-                login_title: "Connexion", login_subtitle: "Connectez-vous pour acceder a votre compte",
+                login_title: "Connexion",
+                login_subtitle: "Connectez-vous pour acceder a votre compte",
+                login_title2: "Connexion",
+                login_subtitle2: "Entrez vos informations",
                 login_google: "Continuer avec Google", login_facebook: "Continuer avec Facebook",
                 login_or: "ou", login_email: "Email", login_password: "Mot de passe", login_submit: "Se connecter",
                 login_no_account: "Pas de compte?", login_register: "Creer un compte",
                 login_has_account: "Deja un compte?", login_link: "Se connecter",
-                reg_title: "Creer un Compte", reg_subtitle: "Rejoignez SAC PRIX CHOC",
+                reg_title: "Creer un Compte", reg_title2: "Creer un Compte",
+                reg_subtitle: "Rejoignez SAC PRIX CHOC", reg_subtitle2: "Rejoignez SAC PRIX CHOC",
+                reg_confirm_password: "Confirmer le mot de passe",
                 reg_name: "Nom Complet", reg_email: "Email", reg_password: "Mot de passe",
                 reg_role: "Votre Role", role_customer: "Client", role_admin: "Administrateur",
                 reg_submit: "Creer le compte",
@@ -3237,11 +3168,14 @@
                 footer_contact_title: "اتصل بنا", footer_address: "الجزائر العاصمة", footer_rights: "جميع الحقوق محفوظة.", footer_currency: "الأسعار بالدينار الجزائري (دج)",
                 cart_title: "سلة التسوق", cart_empty: "سلة التسوق فارغة", cart_total: "المجموع", cart_checkout: "إتمام الشراء",
                 login_title: "تسجيل الدخول", login_subtitle: "سجّل دخولك للوصول إلى حسابك",
+                login_title2: "تسجيل الدخول", login_subtitle2: "أدخل معلوماتك",
                 login_google: "المتابعة مع Google", login_facebook: "المتابعة مع Facebook",
                 login_or: "أو", login_email: "البريد الإلكتروني", login_password: "كلمة المرور", login_submit: "تسجيل الدخول",
                 login_no_account: "ليس لديك حساب؟", login_register: "إنشاء حساب",
                 login_has_account: "لديك حساب؟", login_link: "تسجيل الدخول",
-                reg_title: "إنشاء حساب", reg_subtitle: "انضم إلى SAC PRIX CHOC",
+                reg_title: "إنشاء حساب", reg_title2: "إنشاء حساب",
+                reg_subtitle: "انضم إلى SAC PRIX CHOC", reg_subtitle2: "انضم إلى SAC PRIX CHOC",
+                reg_confirm_password: "تأكيد كلمة المرور",
                 reg_name: "الاسم الكامل", reg_email: "البريد الإلكتروني", reg_password: "كلمة المرور",
                 reg_role: "دورك", role_customer: "عميل", role_admin: "مدير",
                 reg_submit: "إنشاء الحساب",
@@ -3350,109 +3284,126 @@
             return emailjs.send(EMAILJS_SERVICE_ID, templateId, params);
         }
 
-        // ========== GOOGLE IDENTITY SERVICES ==========
-        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
-        let googleInitialized = false;
-        let deviceEmails = [];
-
-        function initGoogleGIS() {
-            if (googleInitialized) return;
-            try {
-                if (typeof google !== 'undefined' && google.accounts && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') {
-                    google.accounts.id.initialize({
-                        client_id: GOOGLE_CLIENT_ID,
-                        callback: handleGoogleCredentialResponse,
-                        auto_select: false,
-                        cancel_on_tap_outside: true
-                    });
-                    googleInitialized = true;
-                }
-            } catch (e) { console.log('Google GIS not configured yet'); }
+        // ========== ACCOUNTS SYSTEM ==========
+        function getAccounts() {
+            return JSON.parse(localStorage.getItem('spc_accounts') || '[]');
+        }
+        function saveAccounts(accounts) {
+            localStorage.setItem('spc_accounts', JSON.stringify(accounts));
         }
 
-        function handleGoogleCredentialResponse(response) {
-            try {
-                const payload = JSON.parse(atob(response.credential.split('.')[1]));
-                const email = payload.email;
-                const name = payload.name || email.split('@')[0];
-                const picture = payload.picture || '';
-
-                if (!deviceEmails.find(e => e.address === email)) {
-                    deviceEmails.push({ address: email, type: 'google', icon: 'fab fa-google', name: name, picture: picture });
-                }
-                completeSocialLogin(email, name, 'google', picture);
-            } catch (e) {
-                console.error('Google auth error:', e);
-                showToast('Erreur de connexion Google');
-            }
+        function showAuthForm(which) {
+            document.getElementById('authChoice').style.display = which === 'choice' ? 'block' : 'none';
+            document.getElementById('authLoginForm').style.display = which === 'login' ? 'block' : 'none';
+            document.getElementById('authRegisterForm').style.display = which === 'register' ? 'block' : 'none';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('regError').style.display = 'none';
         }
 
-        function triggerGoogleLogin() {
-            if (googleInitialized) {
-                google.accounts.id.prompt((notification) => {
-                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                        fallbackEmailCollection('google');
-                    }
-                });
-            } else {
-                fallbackEmailCollection('google');
+        function doRegister() {
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const errEl = document.getElementById('regError');
+
+            if (!email || !password || !confirmPassword) {
+                errEl.textContent = translations[currentLang].toast_fill_fields;
+                errEl.style.display = 'block';
+                return;
             }
+            if (!email.includes('@')) {
+                errEl.textContent = currentLang === 'ar' ? 'البريد غير صحيح' : 'Email invalide';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (password.length < 4) {
+                errEl.textContent = currentLang === 'ar' ? 'كلمة المرور قصيرة جداً (4 أحرف على الأقل)' : 'Mot de passe trop court (4 caracteres min)';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (password !== confirmPassword) {
+                errEl.textContent = currentLang === 'ar' ? 'كلمتا المرور غير متطابقتين' : 'Les mots de passe ne correspondent pas';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            const accounts = getAccounts();
+            if (accounts.find(a => a.email === email)) {
+                errEl.textContent = currentLang === 'ar' ? 'البريد مسجل بالفعل' : 'Cet email est deja utilise';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            accounts.push({ email, password });
+            saveAccounts(accounts);
+
+            errEl.style.display = 'none';
+            currentUser = { name: email.split('@')[0], email, role: 'admin', primaryEmail: email };
+            closeModal('authModal');
+            onLoginSuccess();
+            showToast(translations[currentLang].toast_registered);
         }
 
-        function fallbackEmailCollection(provider) {
-            const providerLower = provider.toLowerCase();
-            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
-            const knownEmails = savedEmails.filter(e => e.provider === providerLower);
-            let emails = [];
+        function doLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errEl = document.getElementById('loginError');
 
-            if (providerLower === 'google') {
-                emails = [
-                    { address: providerLower + '.user@gmail.com', type: 'google', icon: 'fab fa-google' },
-                    { address: 'personal@gmail.com', type: 'google', icon: 'fab fa-google' }
-                ];
-            } else if (providerLower === 'facebook') {
-                emails = [
-                    { address: providerLower + '.user@facebook.com', type: 'facebook', icon: 'fab fa-facebook' }
-                ];
+            if (!email || !password) {
+                errEl.textContent = translations[currentLang].toast_fill_fields;
+                errEl.style.display = 'block';
+                return;
             }
 
-            knownEmails.forEach(saved => {
-                if (!emails.find(e => e.address === saved.address)) {
-                    emails.unshift({ address: saved.address, type: saved.type || providerLower, icon: saved.type === 'email' ? 'fas fa-envelope' : 'fab fa-' + providerLower });
-                }
-            });
+            const accounts = getAccounts();
+            const account = accounts.find(a => a.email === email);
 
-            pendingEmails = emails;
-            selectedEmail = emails[0];
-            showEmailSelector(emails, provider);
+            if (!account) {
+                errEl.textContent = currentLang === 'ar' ? 'الحساب غير موجود - سجّل أولاً' : 'Compte introuvable - creez un compte d\'abord';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            if (account.password !== password) {
+                errEl.textContent = currentLang === 'ar' ? 'كلمة المرور خاطئة' : 'Mot de passe incorrect';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            errEl.style.display = 'none';
+            currentUser = { name: email.split('@')[0], email, role: 'admin', primaryEmail: email };
+            closeModal('authModal');
+            onLoginSuccess();
+            showToast(translations[currentLang].toast_login);
         }
 
-        function completeSocialLogin(email, name, provider, picture) {
-            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
-            if (!savedEmails.find(e => e.address === email)) {
-                savedEmails.push({ address: email, provider: provider, type: provider, name: name });
-                localStorage.setItem('spc_device_emails', JSON.stringify(savedEmails));
+        function onLoginSuccess() {
+            const btn = document.getElementById('authBtn');
+            btn.textContent = currentUser.name;
+            btn.onclick = logout;
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminPanel').classList.add('show');
+                renderAdminConversations();
+                populateEmailForm();
             }
-
-            if (!pendingEmails.find(e => e.address === email)) {
-                pendingEmails.unshift({ address: email, type: provider, icon: 'fab fa-' + provider, name: name, picture: picture });
-            }
-            selectedEmail = pendingEmails.find(e => e.address === email);
-
-            closeModal('loginModal');
-            closeModal('registerModal');
-            closeModal('autoDetectModal');
-            confirmEmailSelection();
+            document.getElementById('chatTrigger').classList.add('show');
         }
 
-        // ========== SAMPLE PRODUCTS ==========
+        function logout() {
+            currentUser = null;
+            const btn = document.getElementById('authBtn');
+            btn.textContent = translations[currentLang].nav_login;
+            btn.onclick = () => { openModal('authModal'); showAuthForm('choice'); };
+            document.getElementById('adminPanel').classList.remove('show');
+            document.getElementById('chatTrigger').classList.remove('show');
+            document.getElementById('chatPanel').classList.remove('show');
+        }
         let products = [];
 
         // ========== INIT ==========
         window.addEventListener('load', () => {
             setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1500);
             initEmailJS();
-            initGoogleGIS();
             createParticles();
             renderProducts();
             renderAdminTable();
@@ -3631,315 +3582,11 @@
         function openModal(id) {
             document.getElementById(id).classList.add('show');
             document.body.style.overflow = 'hidden';
-            if (id === 'loginModal' || id === 'registerModal') {
-                detectDeviceEmails(id);
-            }
-        }
-
-        function detectDeviceEmails(modalId) {
-            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
-            const listId = modalId === 'loginModal' ? 'detectedEmailsList' : 'regDetectedEmailsList';
-            const sectionId = modalId === 'loginModal' ? 'detectedEmailsSection' : 'regDetectedEmailsSection';
-            const list = document.getElementById(listId);
-            const section = document.getElementById(sectionId);
-
-            if (savedEmails.length === 0 && !googleInitialized) {
-                section.style.display = 'none';
-                return;
-            }
-
-            let html = '';
-            savedEmails.forEach(email => {
-                const icon = email.provider === 'google' ? 'fab fa-google' :
-                             email.provider === 'facebook' ? 'fab fa-facebook' : 'fas fa-envelope';
-                const color = email.provider === 'google' ? '#EA4335' :
-                              email.provider === 'facebook' ? '#1877F2' : '#888';
-                html += `
-                    <div class="detected-email-item" onclick="useDetectedEmail('${email.address}', '${email.name || email.address.split('@')[0]}', '${email.provider}', '${modalId}')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray);border:1px solid rgba(255,255,255,0.08);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
-                    <i class="${icon}" style="font-size:1.1rem;color:${color};"></i>
-                    <div>
-                        <div style="font-size:0.9rem;color:var(--white);font-weight:500;">${email.name || email.address.split('@')[0]}</div>
-                        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);">${email.address}</div>
-                    </div>
-                    <i class="fas fa-chevron-right" style="margin-left:auto;color:rgba(255,255,255,0.2);font-size:0.7rem;"></i>
-                </div>`;
-            });
-
-            if (html) {
-                list.innerHTML = html;
-                section.style.display = 'block';
-            } else {
-                section.style.display = 'none';
-            }
-        }
-
-        function useDetectedEmail(email, name, provider, modalId) {
-            pendingEmails = [{ address: email, type: provider, icon: 'fab fa-' + provider, name: name }];
-            selectedEmail = pendingEmails[0];
-            completeSocialLogin(email, name, provider, '');
         }
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('show');
             document.body.style.overflow = '';
-        }
-
-        // Auth
-        let pendingEmails = [];
-        let selectedEmail = null;
-
-        // ========== AUTO-DETECT EMAIL ==========
-        function openLoginWithDetection() {
-            openModal('autoDetectModal');
-            scanDeviceEmails();
-        }
-
-        function scanDeviceEmails() {
-            const loading = document.getElementById('autoDetectLoading');
-            const list = document.getElementById('autoDetectEmailsList');
-            const input = document.getElementById('autoDetectEmailInput');
-
-            list.innerHTML = '';
-            loading.style.display = 'block';
-            input.value = '';
-
-            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
-            const detected = [];
-            savedEmails.forEach(e => {
-                if (!detected.find(d => d.address === e.address)) {
-                    detected.push(e);
-                }
-            });
-
-            setTimeout(() => {
-                loading.style.display = 'none';
-
-                if (detected.length > 0) {
-                    let html = '';
-                    detected.forEach((email, i) => {
-                        const icon = email.provider === 'google' ? 'fab fa-google' :
-                                     email.provider === 'facebook' ? 'fab fa-facebook' : 'fas fa-envelope';
-                        const color = email.provider === 'google' ? '#EA4335' :
-                                      email.provider === 'facebook' ? '#1877F2' : 'var(--accent)';
-                        const bgColor = email.provider === 'google' ? 'rgba(234,67,53,0.12)' :
-                                        email.provider === 'facebook' ? 'rgba(24,119,242,0.12)' : 'rgba(212,175,55,0.12)';
-                        html += `
-                            <div class="detected-email-item" onclick="selectDetectedEmail('${email.address}', '${(email.name || email.address.split('@')[0]).replace(/'/g, "\\'")}', '${email.provider || 'email'}')"
-                                style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:${bgColor};border:1px solid rgba(255,255,255,0.06);border-radius:14px;margin-bottom:10px;cursor:pointer;transition:all 0.3s;"
-                                onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
-                                onmouseout="this.style.borderColor='rgba(255,255,255,0.06)';this.style.transform='none'">
-                                <div style="width:40px;height:40px;border-radius:50%;background:${bgColor};display:flex;align-items:center;justify-content:center;">
-                                    <i class="${icon}" style="font-size:1rem;color:${color};"></i>
-                                </div>
-                                <div style="flex:1;">
-                                    <div style="font-size:0.9rem;color:var(--white);font-weight:600;">${email.name || email.address.split('@')[0]}</div>
-                                    <div style="font-size:0.8rem;color:rgba(255,255,255,0.45);">${email.address}</div>
-                                </div>
-                                <i class="fas fa-chevron-right" style="color:rgba(255,255,255,0.15);font-size:0.75rem;"></i>
-                            </div>`;
-                    });
-                    list.innerHTML = html;
-                }
-
-                setTimeout(() => {
-                    const hiddenInput = document.getElementById('hiddenEmailTrigger');
-                    if (hiddenInput) { hiddenInput.focus(); hiddenInput.click(); }
-                    setTimeout(() => { input.focus(); input.click(); }, 300);
-                }, 100);
-            }, 600);
-        }
-
-        function selectDetectedEmail(email, name, provider) {
-            pendingEmails = [{ address: email, type: provider, icon: 'fab fa-' + provider, name: name }];
-            selectedEmail = pendingEmails[0];
-            completeSocialLogin(email, name, provider, '');
-        }
-
-        function manualEmailLogin() {
-            const input = document.getElementById('autoDetectEmailInput');
-            const email = input ? input.value.trim() : '';
-            if (!email || !email.includes('@')) {
-                showToast(translations[currentLang].toast_fill_fields);
-                if (input) { input.focus(); input.style.borderColor = '#E74C3C'; setTimeout(() => input.style.borderColor = 'rgba(255,255,255,0.1)', 2000); }
-                return;
-            }
-            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
-            const saved = savedEmails.find(e => e.address === email);
-            const name = saved ? saved.name : email.split('@')[0];
-            const provider = saved ? saved.provider : 'email';
-
-            if (!savedEmails.find(e => e.address === email)) {
-                savedEmails.push({ address: email, provider: provider, type: provider, name: name });
-                localStorage.setItem('spc_device_emails', JSON.stringify(savedEmails));
-            }
-
-            pendingEmails = [{ address: email, type: provider, icon: 'fas fa-envelope', name: name }];
-            selectedEmail = pendingEmails[0];
-            completeSocialLogin(email, name, provider, '');
-        }
-
-        function socialLogin(provider) {
-            pendingEmails = [];
-            if (provider.toLowerCase() === 'google') {
-                triggerGoogleLogin();
-            } else {
-                fallbackEmailCollection(provider);
-            }
-        }
-
-        function showEmailSelector(emails, provider) {
-            const list = document.getElementById('emailSelectorList');
-            const typeKey = provider.toLowerCase() === 'google' ? 'email_type_google' : 'email_type_facebook';
-
-            list.innerHTML = emails.map((e, i) => `
-                <div class="email-option ${i === 0 ? 'selected' : ''}" onclick="selectEmailOption(this, ${i})">
-                    <div class="radio-circle"></div>
-                    <div class="email-icon ${e.type}">
-                        <i class="${e.icon}"></i>
-                    </div>
-                    <div class="email-info">
-                        <div class="email-addr">${e.address}</div>
-                        <div class="email-type">${translations[currentLang][typeKey] || e.type}</div>
-                    </div>
-                </div>
-            `).join('');
-
-            closeModal('loginModal');
-            closeModal('registerModal');
-            openModal('emailSelectModal');
-        }
-
-        function selectEmailOption(el, index) {
-            document.querySelectorAll('.email-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedEmail = pendingEmails[index];
-        }
-
-        function confirmEmailSelection() {
-            if (!selectedEmail) return;
-            currentUser = {
-                name: selectedEmail.name || selectedEmail.address.split('@')[0],
-                email: selectedEmail.address,
-                role: 'admin',
-                provider: selectedEmail.type,
-                primaryEmail: selectedEmail.address
-            };
-            closeModal('emailSelectModal');
-            closeModal('autoDetectModal');
-            closeModal('loginModal');
-            closeModal('registerModal');
-            onLoginSuccess();
-            showToast(translations[currentLang].toast_login);
-        }
-
-        function loginWithEmail() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            if (!email || !password) { showToast(translations[currentLang].toast_fill_fields); return; }
-
-            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
-            const saved = savedEmails.find(e => e.address === email);
-            const name = saved ? saved.name : email.split('@')[0];
-
-            if (!savedEmails.find(e => e.address === email)) {
-                savedEmails.push({ address: email, provider: 'email', type: 'email', name: name });
-                localStorage.setItem('spc_device_emails', JSON.stringify(savedEmails));
-            }
-
-            currentUser = { name, role: 'admin', email, primaryEmail: email, provider: 'email' };
-            closeModal('loginModal');
-            onLoginSuccess();
-            showToast(translations[currentLang].toast_login);
-        }
-
-        function registerUser() {
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const role = document.getElementById('regRole').value;
-
-            if (role === 'admin') {
-                pendingAdminData = { name, email, role };
-                startEmailVerification(email);
-                return;
-            }
-
-            currentUser = { name, email, role, primaryEmail: email };
-            closeModal('registerModal');
-            onLoginSuccess();
-            showToast(translations[currentLang].toast_registered);
-        }
-
-        function startEmailVerification(email) {
-            verifyEmailTarget = email;
-            verifyCode = String(Math.floor(100000 + Math.random() * 900000));
-            const display = document.getElementById('verifyEmailDisplay');
-            display.textContent = email;
-            document.querySelectorAll('#verifyCodeInputs input').forEach(i => i.value = '');
-            closeModal('registerModal');
-            openModal('verifyModal');
-            showToast(translations[currentLang].verify_code_sent.replace('{email}', email));
-        }
-
-        function verifyAutoTab(input, index) {
-            if (input.value.length === 1 && index < 5) {
-                document.querySelectorAll('#verifyCodeInputs input')[index + 1].focus();
-            }
-        }
-
-        function verifyKeyDown(e, index) {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                document.querySelectorAll('#verifyCodeInputs input')[index - 1].focus();
-            }
-        }
-
-        function verifyEmailCode() {
-            const inputs = document.querySelectorAll('#verifyCodeInputs input');
-            const entered = Array.from(inputs).map(i => i.value).join('');
-            if (entered === verifyCode) {
-                if (pendingAdminData) {
-                    currentUser = { ...pendingAdminData, primaryEmail: pendingAdminData.email };
-                    pendingAdminData = null;
-                }
-                closeModal('verifyModal');
-                onLoginSuccess();
-                showToast(translations[currentLang].verify_success);
-            } else {
-                showToast(translations[currentLang].verify_code_wrong);
-            }
-        }
-
-        function resendVerifyCode() {
-            verifyCode = String(Math.floor(100000 + Math.random() * 900000));
-            showToast(translations[currentLang].verify_code_sent.replace('{email}', verifyEmailTarget));
-        }
-
-        function onLoginSuccess() {
-            const btn = document.getElementById('authBtn');
-            if (currentUser.role === 'admin') {
-                btn.textContent = currentUser.name;
-                btn.onclick = () => {
-                    document.getElementById('adminPanel').classList.toggle('show');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    renderAdminConversations();
-                    populateEmailForm();
-                };
-                document.getElementById('adminPanel').classList.add('show');
-                renderAdminConversations();
-            } else {
-                btn.textContent = currentUser.name;
-                btn.onclick = logout;
-                document.getElementById('chatTrigger').classList.add('show');
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            const btn = document.getElementById('authBtn');
-            btn.textContent = translations[currentLang].nav_login;
-            btn.onclick = () => openModal('loginModal');
-            document.getElementById('adminPanel').classList.remove('show');
-            document.getElementById('chatTrigger').classList.remove('show');
-            document.getElementById('chatPanel').classList.remove('show');
         }
 
         // Product Modal
@@ -4129,7 +3776,7 @@
                 return;
             }
             if (!currentUser) {
-                openModal('loginModal');
+                openModal('authModal'); showAuthForm('choice');
                 return;
             }
             document.getElementById('checkoutStep1').style.display = 'block';
@@ -4249,7 +3896,7 @@
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
             if (!text) return;
-            if (!currentUser) { openModal('loginModal'); return; }
+            if (!currentUser) { openModal('authModal'); showAuthForm('choice'); return; }
 
             if (!currentConversationId) currentConversationId = 'general';
             if (!conversations[currentConversationId]) {
