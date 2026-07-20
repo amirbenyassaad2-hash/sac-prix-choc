@@ -1554,6 +1554,87 @@
             color: var(--black);
         }
 
+        /* Email Selector */
+        .email-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .email-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            background: var(--gray);
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .email-option:hover {
+            border-color: var(--accent);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .email-option.selected {
+            border-color: var(--accent);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .email-option .radio-circle {
+            width: 22px; height: 22px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .email-option.selected .radio-circle {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+
+        .email-option.selected .radio-circle::after {
+            content: '';
+            width: 8px; height: 8px;
+            background: var(--black);
+            border-radius: 50%;
+        }
+
+        .email-option .email-info {
+            flex: 1;
+        }
+
+        .email-option .email-info .email-addr {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .email-option .email-info .email-type {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 2px;
+        }
+
+        .email-option .email-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .email-option .email-icon.google { background: rgba(234, 67, 53, 0.15); color: #EA4335; }
+        .email-option .email-icon.facebook { background: rgba(24, 119, 242, 0.15); color: #1877F2; }
+        .email-option .email-icon.primary { background: rgba(212, 175, 55, 0.15); color: var(--accent); }
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -2264,6 +2345,17 @@
         </div>
     </div>
 
+    <!-- Email Selection Modal -->
+    <div class="modal-overlay" id="emailSelectModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('emailSelectModal')"><i class="fas fa-times"></i></button>
+            <h2 data-i18n="email_select_title">Choisir Email Principal</h2>
+            <p data-i18n="email_select_subtitle">Selectionnez l'email que vous souhaitez utiliser sur SAC PRIX CHOC</p>
+            <div class="email-selector" id="emailSelectorList"></div>
+            <button class="form-submit" style="margin-top:20px;" onclick="confirmEmailSelection()" data-i18n="email_select_confirm">Confirmer</button>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
@@ -2336,7 +2428,14 @@
                 toast_added: "Produit ajoute au panier!", toast_registered: "Compte cree avec succes!",
                 toast_login: "Connexion reussie!", toast_social: "Connexion via {provider} reussie!",
                 toast_product_added: "Produit ajoute avec succes!", toast_product_deleted: "Produit supprime!",
-                toast_error: "Veuillez remplir tous les champs"
+                toast_error: "Veuillez remplir tous les champs",
+                email_select_title: "Choisir Email Principal",
+                email_select_subtitle: "Selectionnez l'email que vous souhaitez utiliser sur SAC PRIX CHOC",
+                email_select_confirm: "Confirmer",
+                email_type_google: "Compte Google",
+                email_type_facebook: "Compte Facebook",
+                email_type_personal: "Email personnel",
+                email_none_hint: "Aucun email detecte, entrez-en un manuellement"
             },
             ar: {
                 nav_home: "الرئيسية", nav_categories: "الفئات", nav_products: "المنتجات",
@@ -2396,7 +2495,14 @@
                 toast_added: "تمت إضافة المنتج إلى السلة!", toast_registered: "تم إنشاء الحساب بنجاح!",
                 toast_login: "تم تسجيل الدخول بنجاح!", toast_social: "تم تسجيل الدخول عبر {provider} بنجاح!",
                 toast_product_added: "تمت إضافة المنتج بنجاح!", toast_product_deleted: "تم حذف المنتج!",
-                toast_error: "يرجى ملء جميع الحقول"
+                toast_error: "يرجى ملء جميع الحقول",
+                email_select_title: "اختر البريد الإلكتروني الرئيسي",
+                email_select_subtitle: "اختر البريد الإلكتروني الذي تريد استخدامه في SAC PRIX CHOC",
+                email_select_confirm: "تأكيد",
+                email_type_google: "حساب Google",
+                email_type_facebook: "حساب Facebook",
+                email_type_personal: "بريد شخصي",
+                email_none_hint: "لم يتم اكتشاف بريد، أدخل واحد يدوياً"
             }
         };
 
@@ -2407,38 +2513,7 @@
         let cart = [];
 
         // ========== SAMPLE PRODUCTS ==========
-        let products = [
-            {
-                id: 1, name: "Sac Classique Noir", brand: "SAC PRIX CHOC", price: 3500, category: "handbag",
-                image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600", badge: "-30%", rating: 5,
-                desc: "Un sac a main noir intemporel, parfait pour toutes les occasions. Cuir synthétique de haute qualite."
-            },
-            {
-                id: 2, name: "Sac Elegance Doré", brand: "SAC PRIX CHOC", price: 5200, category: "handbag",
-                image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600", badge: "NEW", rating: 5,
-                desc: "Sac a main gorgeant avec finitions dorees. Design luxueux et raffine pour les occasions speciales."
-            },
-            {
-                id: 3, name: "Sac Aventure Bleu", brand: "SAC PRIX CHOC", price: 2800, category: "backpack",
-                image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600", badge: null, rating: 4,
-                desc: "Sac a dos pratique et stylish. Parfait pour les sorties et le quotidien."
-            },
-            {
-                id: 4, name: "Sac Soiree Rose", brand: "SAC PRIX CHOC", price: 4200, category: "evening",
-                image: "https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=600", badge: "-20%", rating: 5,
-                desc: "Sac de soiree elegance avec strass. Idéal pour les fetes et les grands evenements."
-            },
-            {
-                id: 5, name: "Sac Bandouliere Chic", brand: "SAC PRIX CHOC", price: 2200, category: "crossbody",
-                image: "https://images.unsplash.com/photo-1590874103328-eac38ef682df?w=600", badge: "BEST", rating: 4,
-                desc: "Sac a bandouliere compact et pratique. Design moderne pour un usage quotidien."
-            },
-            {
-                id: 6, name: "Sac Premium Cuir", brand: "SAC PRIX CHOC", price: 7500, category: "handbag",
-                image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=600", badge: "LUXE", rating: 5,
-                desc: "Sac premium en cuir véritable avec finitions artisanales. Pièce exclusive limited edition."
-            }
-        ];
+        let products = [];
 
         // ========== INIT ==========
         window.addEventListener('load', () => {
@@ -2620,18 +2695,76 @@
         }
 
         // Auth
+        let pendingEmails = [];
+        let selectedEmail = null;
+
         function socialLogin(provider) {
-            const name = provider === 'Google' ? 'Utilisateur Google' : 'Utilisateur Facebook';
-            currentUser = { name, role: 'admin', provider };
+            const providerLower = provider.toLowerCase();
+            let emails = [];
+
+            if (providerLower === 'google') {
+                emails = [
+                    { address: providerLower + '.user@gmail.com', type: 'google', icon: 'fab fa-google' },
+                    { address: 'personal@gmail.com', type: 'google', icon: 'fab fa-google' },
+                    { address: 'work@company.com', type: 'personal', icon: 'fas fa-envelope' }
+                ];
+            } else if (providerLower === 'facebook') {
+                emails = [
+                    { address: providerLower + '.user@facebook.com', type: 'facebook', icon: 'fab fa-facebook' },
+                    { address: 'alias@outlook.com', type: 'personal', icon: 'fas fa-envelope' }
+                ];
+            }
+
+            pendingEmails = emails;
+            selectedEmail = emails[0];
+            showEmailSelector(emails, provider);
+        }
+
+        function showEmailSelector(emails, provider) {
+            const list = document.getElementById('emailSelectorList');
+            const typeKey = provider.toLowerCase() === 'google' ? 'email_type_google' : 'email_type_facebook';
+
+            list.innerHTML = emails.map((e, i) => `
+                <div class="email-option ${i === 0 ? 'selected' : ''}" onclick="selectEmailOption(this, ${i})">
+                    <div class="radio-circle"></div>
+                    <div class="email-icon ${e.type}">
+                        <i class="${e.icon}"></i>
+                    </div>
+                    <div class="email-info">
+                        <div class="email-addr">${e.address}</div>
+                        <div class="email-type">${translations[currentLang][typeKey] || e.type}</div>
+                    </div>
+                </div>
+            `).join('');
+
             closeModal('loginModal');
             closeModal('registerModal');
+            openModal('emailSelectModal');
+        }
+
+        function selectEmailOption(el, index) {
+            document.querySelectorAll('.email-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedEmail = pendingEmails[index];
+        }
+
+        function confirmEmailSelection() {
+            if (!selectedEmail) return;
+            currentUser = {
+                name: selectedEmail.address.split('@')[0],
+                email: selectedEmail.address,
+                role: 'admin',
+                provider: selectedEmail.type,
+                primaryEmail: selectedEmail.address
+            };
+            closeModal('emailSelectModal');
             onLoginSuccess();
-            showToast(translations[currentLang].toast_social.replace('{provider}', provider));
+            showToast(translations[currentLang].toast_login);
         }
 
         function loginWithEmail() {
             const email = document.getElementById('loginEmail').value;
-            currentUser = { name: email.split('@')[0], role: 'admin', email };
+            currentUser = { name: email.split('@')[0], role: 'admin', email, primaryEmail: email };
             closeModal('loginModal');
             onLoginSuccess();
             showToast(translations[currentLang].toast_login);
@@ -2641,7 +2774,7 @@
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const role = document.getElementById('regRole').value;
-            currentUser = { name, email, role };
+            currentUser = { name, email, role, primaryEmail: email };
             closeModal('registerModal');
             onLoginSuccess();
             showToast(translations[currentLang].toast_registered);
