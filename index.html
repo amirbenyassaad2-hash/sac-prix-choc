@@ -2634,15 +2634,22 @@
                 <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;" data-i18n="detect_scanning">Detection des emails en cours...</p>
             </div>
 
+            <form id="autofillTriggerForm" style="position:absolute;left:-9999px;top:-9999px;opacity:0;" autocomplete="on">
+                <input type="email" name="email" autocomplete="email" id="hiddenEmailTrigger">
+                <input type="text" name="username" autocomplete="username" id="hiddenUsernameTrigger">
+                <input type="password" name="password" autocomplete="current-password">
+            </form>
+
             <div class="divider"><span data-i18n="login_or">ou</span></div>
 
-            <div style="position:relative;">
-                <input type="email" id="autoDetectEmailInput" autocomplete="email" placeholder="votre@email.com"
+            <form onsubmit="event.preventDefault(); manualEmailLogin();" style="margin-bottom:12px;">
+                <input type="email" id="autoDetectEmailInput" autocomplete="email" username="email" name="email"
+                    placeholder="Tapez ou selectionnez votre email..."
                     style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;"
-                    onkeydown="if(event.key==='Enter'){event.preventDefault();manualEmailLogin();}">
-            </div>
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            </form>
 
-            <button class="form-submit" onclick="manualEmailLogin()" style="margin-top:12px;width:100%;" data-i18n="detect_continue">
+            <button class="form-submit" onclick="manualEmailLogin()" style="width:100%;" data-i18n="detect_continue">
                 <i class="fas fa-arrow-right"></i> Continuer
             </button>
 
@@ -3698,7 +3705,6 @@
 
             const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
             const detected = [];
-
             savedEmails.forEach(e => {
                 if (!detected.find(d => d.address === e.address)) {
                     detected.push(e);
@@ -3735,9 +3741,12 @@
                     list.innerHTML = html;
                 }
 
-                input.focus();
-                input.click();
-            }, 800);
+                setTimeout(() => {
+                    const hiddenInput = document.getElementById('hiddenEmailTrigger');
+                    if (hiddenInput) { hiddenInput.focus(); hiddenInput.click(); }
+                    setTimeout(() => { input.focus(); input.click(); }, 300);
+                }, 100);
+            }, 600);
         }
 
         function selectDetectedEmail(email, name, provider) {
@@ -3747,24 +3756,26 @@
         }
 
         function manualEmailLogin() {
-            const email = document.getElementById('autoDetectEmailInput').value.trim();
+            const input = document.getElementById('autoDetectEmailInput');
+            const email = input ? input.value.trim() : '';
             if (!email || !email.includes('@')) {
                 showToast(translations[currentLang].toast_fill_fields);
+                if (input) { input.focus(); input.style.borderColor = '#E74C3C'; setTimeout(() => input.style.borderColor = 'rgba(255,255,255,0.1)', 2000); }
                 return;
             }
             const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
             const saved = savedEmails.find(e => e.address === email);
             const name = saved ? saved.name : email.split('@')[0];
+            const provider = saved ? saved.provider : 'email';
 
-            const isNew = !savedEmails.find(e => e.address === email);
-            if (isNew) {
-                savedEmails.push({ address: email, provider: 'email', type: 'email', name: name });
+            if (!savedEmails.find(e => e.address === email)) {
+                savedEmails.push({ address: email, provider: provider, type: provider, name: name });
                 localStorage.setItem('spc_device_emails', JSON.stringify(savedEmails));
             }
 
-            pendingEmails = [{ address: email, type: 'email', icon: 'fas fa-envelope', name: name }];
+            pendingEmails = [{ address: email, type: provider, icon: 'fas fa-envelope', name: name }];
             selectedEmail = pendingEmails[0];
-            completeSocialLogin(email, name, 'email', '');
+            completeSocialLogin(email, name, provider, '');
         }
 
         function socialLogin(provider) {
@@ -3807,20 +3818,35 @@
         function confirmEmailSelection() {
             if (!selectedEmail) return;
             currentUser = {
-                name: selectedEmail.address.split('@')[0],
+                name: selectedEmail.name || selectedEmail.address.split('@')[0],
                 email: selectedEmail.address,
                 role: 'admin',
                 provider: selectedEmail.type,
                 primaryEmail: selectedEmail.address
             };
             closeModal('emailSelectModal');
+            closeModal('autoDetectModal');
+            closeModal('loginModal');
+            closeModal('registerModal');
             onLoginSuccess();
             showToast(translations[currentLang].toast_login);
         }
 
         function loginWithEmail() {
             const email = document.getElementById('loginEmail').value;
-            currentUser = { name: email.split('@')[0], role: 'admin', email, primaryEmail: email };
+            const password = document.getElementById('loginPassword').value;
+            if (!email || !password) { showToast(translations[currentLang].toast_fill_fields); return; }
+
+            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
+            const saved = savedEmails.find(e => e.address === email);
+            const name = saved ? saved.name : email.split('@')[0];
+
+            if (!savedEmails.find(e => e.address === email)) {
+                savedEmails.push({ address: email, provider: 'email', type: 'email', name: name });
+                localStorage.setItem('spc_device_emails', JSON.stringify(savedEmails));
+            }
+
+            currentUser = { name, role: 'admin', email, primaryEmail: email, provider: 'email' };
             closeModal('loginModal');
             onLoginSuccess();
             showToast(translations[currentLang].toast_login);
