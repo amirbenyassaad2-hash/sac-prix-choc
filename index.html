@@ -6,6 +6,7 @@
     <title>SAC PRIX CHOC - Bolsa de Mano</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         :root {
@@ -1636,6 +1637,9 @@
         .email-option .email-icon.facebook { background: rgba(24, 119, 242, 0.15); color: #1877F2; }
         .email-option .email-icon.primary { background: rgba(212, 175, 55, 0.15); color: var(--accent); }
 
+        .detected-email-item { animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
         /* Email Verification */
         .verify-code-input {
             display: flex;
@@ -2617,6 +2621,13 @@
             <h2 data-i18n="login_title">Connexion</h2>
             <p data-i18n="login_subtitle">Connectez-vous pour acceder a votre compte</p>
 
+            <div id="detectedEmailsSection" style="display:none;margin-bottom:20px;">
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">
+                    <i class="fas fa-mobile-alt"></i> <span data-i18n="login_device_emails">Emails detectes sur cet appareil</span>
+                </div>
+                <div id="detectedEmailsList"></div>
+            </div>
+
             <div class="social-login">
                 <button class="social-login-btn" onclick="socialLogin('Google')">
                     <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
@@ -2633,11 +2644,11 @@
             <form onsubmit="event.preventDefault(); loginWithEmail();">
                 <div class="form-group">
                     <label data-i18n="login_email">Email</label>
-                    <input type="email" placeholder="votre@email.com" id="loginEmail" required>
+                    <input type="email" placeholder="votre@email.com" id="loginEmail" required autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label data-i18n="login_password">Mot de passe</label>
-                    <input type="password" placeholder="••••••••" id="loginPassword" required>
+                    <input type="password" placeholder="••••••••" id="loginPassword" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="form-submit" data-i18n="login_submit">Se connecter</button>
             </form>
@@ -2655,6 +2666,13 @@
             <button class="modal-close" onclick="closeModal('registerModal')"><i class="fas fa-times"></i></button>
             <h2 data-i18n="reg_title">Creer un Compte</h2>
             <p data-i18n="reg_subtitle">Rejoignez SAC PRIX CHOC</p>
+
+            <div id="regDetectedEmailsSection" style="display:none;margin-bottom:20px;">
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">
+                    <i class="fas fa-mobile-alt"></i> <span data-i18n="login_device_emails">Emails detectes sur cet appareil</span>
+                </div>
+                <div id="regDetectedEmailsList"></div>
+            </div>
 
             <div class="social-login">
                 <button class="social-login-btn" onclick="socialLogin('Google')">
@@ -2676,11 +2694,11 @@
                 </div>
                 <div class="form-group">
                     <label data-i18n="reg_email">Email</label>
-                    <input type="email" placeholder="votre@email.com" id="regEmail" required>
+                    <input type="email" placeholder="votre@email.com" id="regEmail" required autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label data-i18n="reg_password">Mot de passe</label>
-                    <input type="password" placeholder="••••••••" id="regPassword" required>
+                    <input type="password" placeholder="••••••••" id="regPassword" required autocomplete="new-password">
                 </div>
                 <div class="form-group">
                     <label data-i18n="reg_role">Votre Role</label>
@@ -3129,7 +3147,8 @@
                 admin_emailjs_template_order: "Template Commande (ID)",
                 admin_emailjs_template_msg: "Template Message (ID)",
                 admin_save_settings: "Enregistrer",
-                admin_test_email: "Tester Email"
+                admin_test_email: "Tester Email",
+                login_device_emails: "Emails detectes sur cet appareil"
             },
             ar: {
                 nav_home: "الرئيسية", nav_categories: "الفئات", nav_products: "المنتجات",
@@ -3232,7 +3251,8 @@
                 admin_emailjs_template_order: "قالب الطلب (ID)",
                 admin_emailjs_template_msg: "قالب الرسالة (ID)",
                 admin_save_settings: "حفظ الإعدادات",
-                admin_test_email: "اختبار البريد"
+                admin_test_email: "اختبار البريد",
+                login_device_emails: "البريد المكتشف على هذا الجهاز"
             }
         };
 
@@ -3273,6 +3293,100 @@
             return emailjs.send(EMAILJS_SERVICE_ID, templateId, params);
         }
 
+        // ========== GOOGLE IDENTITY SERVICES ==========
+        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+        let googleInitialized = false;
+        let deviceEmails = [];
+
+        function initGoogleGIS() {
+            if (googleInitialized) return;
+            try {
+                if (typeof google !== 'undefined' && google.accounts && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') {
+                    google.accounts.id.initialize({
+                        client_id: GOOGLE_CLIENT_ID,
+                        callback: handleGoogleCredentialResponse,
+                        auto_select: false,
+                        cancel_on_tap_outside: true
+                    });
+                    googleInitialized = true;
+                }
+            } catch (e) { console.log('Google GIS not configured yet'); }
+        }
+
+        function handleGoogleCredentialResponse(response) {
+            try {
+                const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                const email = payload.email;
+                const name = payload.name || email.split('@')[0];
+                const picture = payload.picture || '';
+
+                if (!deviceEmails.find(e => e.address === email)) {
+                    deviceEmails.push({ address: email, type: 'google', icon: 'fab fa-google', name: name, picture: picture });
+                }
+                completeSocialLogin(email, name, 'google', picture);
+            } catch (e) {
+                console.error('Google auth error:', e);
+                showToast('Erreur de connexion Google');
+            }
+        }
+
+        function triggerGoogleLogin() {
+            if (googleInitialized) {
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                        fallbackEmailCollection('google');
+                    }
+                });
+            } else {
+                fallbackEmailCollection('google');
+            }
+        }
+
+        function fallbackEmailCollection(provider) {
+            const providerLower = provider.toLowerCase();
+            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
+            const knownEmails = savedEmails.filter(e => e.provider === providerLower);
+            let emails = [];
+
+            if (providerLower === 'google') {
+                emails = [
+                    { address: providerLower + '.user@gmail.com', type: 'google', icon: 'fab fa-google' },
+                    { address: 'personal@gmail.com', type: 'google', icon: 'fab fa-google' }
+                ];
+            } else if (providerLower === 'facebook') {
+                emails = [
+                    { address: providerLower + '.user@facebook.com', type: 'facebook', icon: 'fab fa-facebook' }
+                ];
+            }
+
+            knownEmails.forEach(saved => {
+                if (!emails.find(e => e.address === saved.address)) {
+                    emails.unshift({ address: saved.address, type: saved.type || providerLower, icon: saved.type === 'email' ? 'fas fa-envelope' : 'fab fa-' + providerLower });
+                }
+            });
+
+            pendingEmails = emails;
+            selectedEmail = emails[0];
+            showEmailSelector(emails, provider);
+        }
+
+        function completeSocialLogin(email, name, provider, picture) {
+            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
+            if (!savedEmails.find(e => e.address === email)) {
+                savedEmails.push({ address: email, provider: provider, type: provider, name: name });
+                localStorage.setItem('spc_device_emails', JSON.stringify(savedEmails));
+            }
+
+            if (!pendingEmails.find(e => e.address === email)) {
+                pendingEmails.unshift({ address: email, type: provider, icon: 'fab fa-' + provider, name: name, picture: picture });
+            }
+            selectedEmail = pendingEmails.find(e => e.address === email);
+
+            closeModal('loginModal');
+            closeModal('registerModal');
+            confirmEmailSelection();
+        }
+
         // ========== SAMPLE PRODUCTS ==========
         let products = [];
 
@@ -3280,6 +3394,7 @@
         window.addEventListener('load', () => {
             setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1500);
             initEmailJS();
+            initGoogleGIS();
             createParticles();
             renderProducts();
             renderAdminTable();
@@ -3458,6 +3573,52 @@
         function openModal(id) {
             document.getElementById(id).classList.add('show');
             document.body.style.overflow = 'hidden';
+            if (id === 'loginModal' || id === 'registerModal') {
+                detectDeviceEmails(id);
+            }
+        }
+
+        function detectDeviceEmails(modalId) {
+            const savedEmails = JSON.parse(localStorage.getItem('spc_device_emails') || '[]');
+            const listId = modalId === 'loginModal' ? 'detectedEmailsList' : 'regDetectedEmailsList';
+            const sectionId = modalId === 'loginModal' ? 'detectedEmailsSection' : 'regDetectedEmailsSection';
+            const list = document.getElementById(listId);
+            const section = document.getElementById(sectionId);
+
+            if (savedEmails.length === 0 && !googleInitialized) {
+                section.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            savedEmails.forEach(email => {
+                const icon = email.provider === 'google' ? 'fab fa-google' :
+                             email.provider === 'facebook' ? 'fab fa-facebook' : 'fas fa-envelope';
+                const color = email.provider === 'google' ? '#EA4335' :
+                              email.provider === 'facebook' ? '#1877F2' : '#888';
+                html += `
+                    <div class="detected-email-item" onclick="useDetectedEmail('${email.address}', '${email.name || email.address.split('@')[0]}', '${email.provider}', '${modalId}')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray);border:1px solid rgba(255,255,255,0.08);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                    <i class="${icon}" style="font-size:1.1rem;color:${color};"></i>
+                    <div>
+                        <div style="font-size:0.9rem;color:var(--white);font-weight:500;">${email.name || email.address.split('@')[0]}</div>
+                        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);">${email.address}</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:rgba(255,255,255,0.2);font-size:0.7rem;"></i>
+                </div>`;
+            });
+
+            if (html) {
+                list.innerHTML = html;
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        function useDetectedEmail(email, name, provider, modalId) {
+            pendingEmails = [{ address: email, type: provider, icon: 'fab fa-' + provider, name: name }];
+            selectedEmail = pendingEmails[0];
+            completeSocialLogin(email, name, provider, '');
         }
 
         function closeModal(id) {
@@ -3470,25 +3631,12 @@
         let selectedEmail = null;
 
         function socialLogin(provider) {
-            const providerLower = provider.toLowerCase();
-            let emails = [];
-
-            if (providerLower === 'google') {
-                emails = [
-                    { address: providerLower + '.user@gmail.com', type: 'google', icon: 'fab fa-google' },
-                    { address: 'personal@gmail.com', type: 'google', icon: 'fab fa-google' },
-                    { address: 'work@company.com', type: 'personal', icon: 'fas fa-envelope' }
-                ];
-            } else if (providerLower === 'facebook') {
-                emails = [
-                    { address: providerLower + '.user@facebook.com', type: 'facebook', icon: 'fab fa-facebook' },
-                    { address: 'alias@outlook.com', type: 'personal', icon: 'fas fa-envelope' }
-                ];
+            pendingEmails = [];
+            if (provider.toLowerCase() === 'google') {
+                triggerGoogleLogin();
+            } else {
+                fallbackEmailCollection(provider);
             }
-
-            pendingEmails = emails;
-            selectedEmail = emails[0];
-            showEmailSelector(emails, provider);
         }
 
         function showEmailSelector(emails, provider) {
