@@ -3211,7 +3211,11 @@
             document.getElementById('chatTrigger').classList.remove('show');
             document.getElementById('chatPanel').classList.remove('show');
         }
-        let products = [];
+        let products = JSON.parse(localStorage.getItem('spc_products') || '[]');
+
+        function saveProducts() {
+            localStorage.setItem('spc_products', JSON.stringify(products));
+        }
 
         // ========== INIT ==========
         window.addEventListener('load', () => {
@@ -3432,6 +3436,7 @@
             products.push({
                 id: Date.now(), name, brand, price, badge, rating, desc, image, published: true
             });
+            saveProducts();
 
             renderProducts();
             renderAdminTable();
@@ -3450,6 +3455,7 @@
 
         function deleteProduct(id) {
             products = products.filter(p => p.id !== id);
+            saveProducts();
             renderProducts();
             renderAdminTable();
             updateAdminStats();
@@ -3460,6 +3466,7 @@
             const p = products.find(pr => pr.id === id);
             if (p) {
                 p.published = !p.published;
+                saveProducts();
                 renderProducts();
                 renderAdminTable();
                 showToast(p.published
