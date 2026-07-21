@@ -3288,13 +3288,13 @@
         }
         // ========== FIREBASE CONFIG ==========
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyArlrzOTeSkPXIdlTotpOZ8Q74DDp7kGsE",
+            authDomain: "sac-prix-choc-3e823.firebaseapp.com",
+            databaseURL: "https://sac-prix-choc-3e823-default-rtdb.firebaseio.com",
+            projectId: "sac-prix-choc-3e823",
+            storageBucket: "sac-prix-choc-3e823.appspot.com",
+            messagingSenderId: "910806887525",
+            appId: "1:910806887525:web:e0280ebfdda1173a8fea8c"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -3302,16 +3302,19 @@
         let firebaseReady = false;
 
         function initFirebase() {
-            if (firebaseConfig.apiKey === 'YOUR_API_KEY') return;
-            firebaseReady = true;
-            db.ref('products').on('value', (snap) => {
-                products = snap.val() ? Object.values(snap.val()) : [];
-                renderProducts();
-                if (currentUser && currentUser.role === 'admin') {
-                    renderAdminTable();
-                    updateAdminStats();
-                }
-            });
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                firebaseReady = true;
+                db.ref('products').on('value', (snap) => {
+                    products = snap.val() ? Object.values(snap.val()) : [];
+                    renderProducts();
+                    if (currentUser && currentUser.role === 'admin') {
+                        renderAdminTable();
+                        updateAdminStats();
+                    }
+                });
+            } catch(e) { console.log('Firebase init skipped'); }
         }
 
         function saveProducts() {
