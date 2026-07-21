@@ -2287,6 +2287,15 @@
         </div>
     </section>
 
+    <!-- Gallery Section -->
+    <section class="section" id="gallery" style="padding:40px 0;">
+        <div class="section-header">
+            <span class="tag" data-i18n="gallery_tag">Notre Galerie</span>
+            <h2 data-i18n="gallery_title">Nos Photos</h2>
+        </div>
+        <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:0 5%;"></div>
+    </section>
+
     <!-- Products Section -->
     <section class="section" id="products">
         <div class="section-header">
@@ -2653,6 +2662,23 @@
                 </div>
             </div>
 
+            <div class="admin-section">
+                <h3><i class="fas fa-images"></i> <span data-i18n="admin_gallery">Galerie Photos</span></h3>
+                <p style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-bottom:15px;" data-i18n="admin_gallery_desc">Ajoutez des images visibles par tous les visiteurs</p>
+                <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+                    <input type="text" id="newGalleryUrl" placeholder="URL de l'image" style="flex:1;min-width:200px;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    <input type="text" id="newGalleryTitle" placeholder="Titre (optionnel)" style="flex:1;min-width:150px;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    <button class="form-submit" onclick="addGalleryImage()" style="white-space:nowrap;">
+                        <i class="fas fa-plus"></i> <span data-i18n="admin_add_image">Ajouter</span>
+                    </button>
+                </div>
+                <input type="file" id="galleryFileUpload" accept="image/*" style="display:none;" onchange="uploadGalleryImage(this)">
+                <button class="btn-secondary" onclick="document.getElementById('galleryFileUpload').click()" style="margin-bottom:15px;padding:10px 18px;font-size:0.85rem;">
+                    <i class="fas fa-upload"></i> <span data-i18n="admin_upload_image">Televerser une image</span>
+                </button>
+                <div id="adminGalleryList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;"></div>
+            </div>
+
             <div class="admin-messages-section">
                 <h3><i class="fas fa-envelope"></i> <span data-i18n="admin_messages">Messages Clients</span></h3>
                 <div class="conversation-list" id="conversationList">
@@ -2972,6 +2998,12 @@
                 admin_test_email: "Tester Email",
                 admin_firebase_settings: "Base de donnees (Firebase)",
                 admin_firebase_desc: "Pour que les produits soient visibles par tous les visiteurs",
+                admin_gallery: "Galerie Photos",
+                admin_gallery_desc: "Ajoutez des images visibles par tous les visiteurs",
+                admin_add_image: "Ajouter",
+                admin_upload_image: "Televerser une image",
+                gallery_tag: "Notre Galerie",
+                gallery_title: "Nos Photos",
                 login_device_emails: "Emails detectes sur cet appareil",
                 detect_title: "Selectionnez votre email",
                 detect_subtitle: "Emails detectes sur cet appareil",
@@ -3083,6 +3115,12 @@
                 admin_test_email: "اختبار البريد",
                 admin_firebase_settings: "قاعدة البيانات (Firebase)",
                 admin_firebase_desc: "لجعل المنتجات مرئية لجميع الزوار",
+                admin_gallery: "معرض الصور",
+                admin_gallery_desc: "أضف صوراً مرئية لجميع الزوار",
+                admin_add_image: "إضافة",
+                admin_upload_image: "تحميل صورة",
+                gallery_tag: "معرضنا",
+                gallery_title: "صورنا",
                 login_device_emails: "البريد المكتشف على هذا الجهاز",
                 detect_title: "اختر بريدك الإلكتروني",
                 detect_subtitle: "البريد المكتشف على هذا الجهاز",
@@ -3291,6 +3329,7 @@
             setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1500);
             initEmailJS();
             initFirebase();
+            initGallery();
             createParticles();
             renderProducts();
             renderAdminTable();
@@ -3656,6 +3695,96 @@
             setVal('fbDatabaseURL', saved.databaseURL);
             setVal('fbProjectId', saved.projectId);
             setVal('fbAppId', saved.appId);
+        }
+
+        // ========== GALLERY ==========
+        let galleryImages = [];
+
+        function initGallery() {
+            if (firebaseReady) {
+                db.ref('gallery').on('value', (snap) => {
+                    galleryImages = snap.val() ? Object.values(snap.val()) : [];
+                    renderGallery();
+                    renderAdminGallery();
+                });
+            } else {
+                galleryImages = JSON.parse(localStorage.getItem('spc_gallery') || '[]');
+                renderGallery();
+                renderAdminGallery();
+            }
+        }
+
+        function saveGallery() {
+            if (firebaseReady) {
+                const obj = {};
+                galleryImages.forEach(img => { obj[img.id] = img; });
+                db.ref('gallery').set(obj);
+            } else {
+                localStorage.setItem('spc_gallery', JSON.stringify(galleryImages));
+            }
+        }
+
+        function addGalleryImage() {
+            const url = document.getElementById('newGalleryUrl').value.trim();
+            const title = document.getElementById('newGalleryTitle').value.trim();
+            if (!url) { showToast(currentLang === 'ar' ? 'أدخل رابط الصورة' : 'Entrez une URL'); return; }
+            galleryImages.push({ id: Date.now(), url, title });
+            saveGallery();
+            document.getElementById('newGalleryUrl').value = '';
+            document.getElementById('newGalleryTitle').value = '';
+            showToast(currentLang === 'ar' ? 'تمت الإضافة!' : 'Image ajoutee!');
+        }
+
+        function uploadGalleryImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                galleryImages.push({ id: Date.now(), url: e.target.result, title: file.name });
+                saveGallery();
+                showToast(currentLang === 'ar' ? 'تم التحميل!' : 'Image televersee!');
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        function deleteGalleryImage(id) {
+            galleryImages = galleryImages.filter(img => img.id !== id);
+            saveGallery();
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            if (!grid) return;
+            if (galleryImages.length === 0) { grid.innerHTML = ''; grid.parentElement.style.display = 'none'; return; }
+            grid.parentElement.style.display = 'block';
+            grid.innerHTML = galleryImages.map(img => `
+                <div style="position:relative;border-radius:16px;overflow:hidden;aspect-ratio:4/3;cursor:pointer;" onclick="openGalleryViewer('${img.url.replace(/'/g, "\\'")}')">
+                    <img src="${img.url}" alt="${img.title || ''}" style="width:100%;height:100%;object-fit:cover;">
+                    ${img.title ? `<div style="position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:white;font-size:0.85rem;font-weight:500;">${img.title}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function openGalleryViewer(url) {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+            overlay.onclick = () => overlay.remove();
+            overlay.innerHTML = `<img src="${url}" style="max-width:90%;max-height:90%;object-fit:contain;border-radius:8px;">`;
+            document.body.appendChild(overlay);
+        }
+
+        function renderAdminGallery() {
+            const list = document.getElementById('adminGalleryList');
+            if (!list) return;
+            list.innerHTML = galleryImages.map(img => `
+                <div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:1;background:var(--gray);">
+                    <img src="${img.url}" style="width:100%;height:100%;object-fit:cover;">
+                    <button onclick="deleteGalleryImage(${img.id})" style="position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(231,76,60,0.9);border:none;color:white;cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
         }
 
         function renderAdminTable() {
