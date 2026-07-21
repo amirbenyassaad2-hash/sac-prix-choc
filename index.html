@@ -6,6 +6,8 @@
     <title>SAC PRIX CHOC - Bolsa de Mano</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         :root {
@@ -2703,6 +2705,36 @@
                     <div class="full-width" id="emailStatus" style="margin-top:10px;font-size:0.85rem;"></div>
                 </div>
             </div>
+
+            <div class="admin-section" style="margin-top:20px;">
+                <h3><i class="fas fa-database"></i> <span data-i18n="admin_firebase_settings">Base de donnees (Firebase)</span></h3>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:15px;" data-i18n="admin_firebase_desc">Pour que les produits soient visibles par tous les visiteurs</p>
+                <div class="admin-form-grid">
+                    <div class="form-group full-width">
+                        <label>API Key</label>
+                        <input type="text" id="fbApiKey" placeholder="AIzaSy..." style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Database URL</label>
+                        <input type="text" id="fbDatabaseURL" placeholder="https://xxx-default-rtdb.firebaseio.com" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Project ID</label>
+                        <input type="text" id="fbProjectId" placeholder="mon-projet-xxxxx" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>App ID</label>
+                        <input type="text" id="fbAppId" placeholder="1:xxx:web:xxx" style="width:100%;padding:14px 18px;background:var(--gray);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--white);font-size:0.9rem;outline:none;">
+                    </div>
+                    <div class="full-width" style="display:flex;gap:10px;">
+                        <button class="form-submit" onclick="saveFirebaseSettings()" style="flex:1;">
+                            <i class="fas fa-save"></i> <span data-i18n="admin_save_settings">Enregistrer</span>
+                        </button>
+                    </div>
+                    <div class="full-width" id="firebaseStatus" style="margin-top:10px;font-size:0.85rem;"></div>
+                </div>
+            </div>
+
                 <div class="conversation-list" id="conversationList">
                     <p style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;" data-i18n="admin_no_messages">Aucun message pour le moment</p>
                 </div>
@@ -2938,6 +2970,8 @@
                 admin_emailjs_template_msg: "Template Message (ID)",
                 admin_save_settings: "Enregistrer",
                 admin_test_email: "Tester Email",
+                admin_firebase_settings: "Base de donnees (Firebase)",
+                admin_firebase_desc: "Pour que les produits soient visibles par tous les visiteurs",
                 login_device_emails: "Emails detectes sur cet appareil",
                 detect_title: "Selectionnez votre email",
                 detect_subtitle: "Emails detectes sur cet appareil",
@@ -3047,6 +3081,8 @@
                 admin_emailjs_template_msg: "قالب الرسالة (ID)",
                 admin_save_settings: "حفظ الإعدادات",
                 admin_test_email: "اختبار البريد",
+                admin_firebase_settings: "قاعدة البيانات (Firebase)",
+                admin_firebase_desc: "لجعل المنتجات مرئية لجميع الزوار",
                 login_device_emails: "البريد المكتشف على هذا الجهاز",
                 detect_title: "اختر بريدك الإلكتروني",
                 detect_subtitle: "البريد المكتشف على هذا الجهاز",
@@ -3198,6 +3234,7 @@
                 document.getElementById('adminPanel').classList.add('show');
                 renderAdminConversations();
                 populateEmailForm();
+                populateFirebaseForm();
             }
             document.getElementById('chatTrigger').classList.add('show');
         }
@@ -3211,16 +3248,49 @@
             document.getElementById('chatTrigger').classList.remove('show');
             document.getElementById('chatPanel').classList.remove('show');
         }
-        let products = JSON.parse(localStorage.getItem('spc_products') || '[]');
+        // ========== FIREBASE CONFIG ==========
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let products = [];
+        let firebaseReady = false;
+
+        function initFirebase() {
+            if (firebaseConfig.apiKey === 'YOUR_API_KEY') return;
+            firebaseReady = true;
+            db.ref('products').on('value', (snap) => {
+                products = snap.val() ? Object.values(snap.val()) : [];
+                renderProducts();
+                if (currentUser && currentUser.role === 'admin') {
+                    renderAdminTable();
+                    updateAdminStats();
+                }
+            });
+        }
 
         function saveProducts() {
-            localStorage.setItem('spc_products', JSON.stringify(products));
+            if (firebaseReady) {
+                const obj = {};
+                products.forEach(p => { obj[p.id] = p; });
+                db.ref('products').set(obj);
+            } else {
+                localStorage.setItem('spc_products', JSON.stringify(products));
+            }
         }
 
         // ========== INIT ==========
         window.addEventListener('load', () => {
             setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1500);
             initEmailJS();
+            initFirebase();
             createParticles();
             renderProducts();
             renderAdminTable();
@@ -3548,6 +3618,45 @@
         }
 
         loadEmailSettings();
+
+        // ========== FIREBASE SETTINGS ==========
+        function loadFirebaseSettings() {
+            const saved = JSON.parse(localStorage.getItem('spc_firebase_config') || '{}');
+            const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+            setVal('fbApiKey', saved.apiKey);
+            setVal('fbDatabaseURL', saved.databaseURL);
+            setVal('fbProjectId', saved.projectId);
+            setVal('fbAppId', saved.appId);
+            if (saved.apiKey && saved.databaseURL && saved.apiKey !== 'YOUR_API_KEY') {
+                firebaseConfig.apiKey = saved.apiKey;
+                firebaseConfig.databaseURL = saved.databaseURL;
+                firebaseConfig.projectId = saved.projectId;
+                firebaseConfig.appId = saved.appId;
+                try { firebase.app().delete().then(() => { firebase.initializeApp(firebaseConfig); db = firebase.database(); firebaseReady = true; initFirebase(); }); } catch(e) { initFirebase(); }
+            }
+        }
+
+        function saveFirebaseSettings() {
+            const settings = {
+                apiKey: document.getElementById('fbApiKey').value,
+                databaseURL: document.getElementById('fbDatabaseURL').value,
+                projectId: document.getElementById('fbProjectId').value,
+                appId: document.getElementById('fbAppId').value
+            };
+            localStorage.setItem('spc_firebase_config', JSON.stringify(settings));
+            const status = document.getElementById('firebaseStatus');
+            status.innerHTML = '<span style="color:#2ECC71;"><i class="fas fa-check-circle"></i> ' +
+                (currentLang === 'ar' ? 'تم الحفظ! أعد تحميل الصفحة' : 'Sauvegarde! Rechargez la page') + '</span>';
+        }
+
+        function populateFirebaseForm() {
+            const saved = JSON.parse(localStorage.getItem('spc_firebase_config') || '{}');
+            const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+            setVal('fbApiKey', saved.apiKey);
+            setVal('fbDatabaseURL', saved.databaseURL);
+            setVal('fbProjectId', saved.projectId);
+            setVal('fbAppId', saved.appId);
+        }
 
         function renderAdminTable() {
             const tbody = document.getElementById('adminTableBody');
