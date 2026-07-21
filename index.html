@@ -1022,38 +1022,6 @@
             margin-bottom: 30px;
         }
 
-        .social-login {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .social-login-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: var(--gray);
-            color: var(--white);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .social-login-btn:hover {
-            border-color: var(--accent);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .social-login-btn img {
-            width: 22px; height: 22px;
-        }
-
         .divider {
             display: flex;
             align-items: center;
@@ -1556,90 +1524,6 @@
         }
 
         /* Email Selector */
-        .email-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .email-option {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 16px 18px;
-            background: var(--gray);
-            border: 2px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .email-option:hover {
-            border-color: var(--accent);
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        .email-option.selected {
-            border-color: var(--accent);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .email-option .radio-circle {
-            width: 22px; height: 22px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-
-        .email-option.selected .radio-circle {
-            border-color: var(--accent);
-            background: var(--accent);
-        }
-
-        .email-option.selected .radio-circle::after {
-            content: '';
-            width: 8px; height: 8px;
-            background: var(--black);
-            border-radius: 50%;
-        }
-
-        .email-option .email-info {
-            flex: 1;
-        }
-
-        .email-option .email-info .email-addr {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--white);
-        }
-
-        .email-option .email-info .email-type {
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.4);
-            margin-top: 2px;
-        }
-
-        .email-option .email-icon {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-
-        .email-option .email-icon.google { background: rgba(234, 67, 53, 0.15); color: #EA4335; }
-        .email-option .email-icon.facebook { background: rgba(24, 119, 242, 0.15); color: #1877F2; }
-        .email-option .email-icon.primary { background: rgba(212, 175, 55, 0.15); color: var(--accent); }
-
-        .detected-email-item { animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         /* Email Verification */
         .verify-code-input {
             display: flex;
@@ -2315,7 +2199,6 @@
 
         <ul class="nav-links">
             <li><a href="#home" data-i18n="nav_home">Accueil</a></li>
-            <li><a href="#categories" data-i18n="nav_categories">Categories</a></li>
             <li><a href="#products" data-i18n="nav_products">Produits</a></li>
             <li><a href="#features" data-i18n="nav_features">Avantages</a></li>
             <li><a href="#testimonials" data-i18n="nav_reviews">Avis</a></li>
@@ -2908,17 +2791,6 @@
         </div>
     </div>
 
-    <!-- Email Selection Modal -->
-    <div class="modal-overlay" id="emailSelectModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('emailSelectModal')"><i class="fas fa-times"></i></button>
-            <h2 data-i18n="email_select_title">Choisir Email Principal</h2>
-            <p data-i18n="email_select_subtitle">Selectionnez l'email que vous souhaitez utiliser sur SAC PRIX CHOC</p>
-            <div class="email-selector" id="emailSelectorList"></div>
-            <button class="form-submit" style="margin-top:20px;" onclick="confirmEmailSelection()" data-i18n="email_select_confirm">Confirmer</button>
-        </div>
-    </div>
-
     <!-- Chat Panel -->
     <button class="chat-trigger" id="chatTrigger" onclick="toggleChat()">
         <i class="fas fa-comments"></i>
@@ -3000,7 +2872,6 @@
                 login_subtitle: "Connectez-vous pour acceder a votre compte",
                 login_title2: "Connexion",
                 login_subtitle2: "Entrez vos informations",
-                login_google: "Continuer avec Google", login_facebook: "Continuer avec Facebook",
                 login_or: "ou", login_email: "Email", login_password: "Mot de passe", login_submit: "Se connecter",
                 login_no_account: "Pas de compte?", login_register: "Creer un compte",
                 login_has_account: "Deja un compte?", login_link: "Se connecter",
@@ -3029,8 +2900,6 @@
                 email_select_title: "Choisir Email Principal",
                 email_select_subtitle: "Selectionnez l'email que vous souhaitez utiliser sur SAC PRIX CHOC",
                 email_select_confirm: "Confirmer",
-                email_type_google: "Compte Google",
-                email_type_facebook: "Compte Facebook",
                 email_type_personal: "Email personnel",
                 email_none_hint: "Aucun email detecte, entrez-en un manuellement",
                 verify_title: "Verification Email",
@@ -3112,7 +2981,6 @@
                 cart_title: "سلة التسوق", cart_empty: "سلة التسوق فارغة", cart_total: "المجموع", cart_checkout: "إتمام الشراء",
                 login_title: "تسجيل الدخول", login_subtitle: "سجّل دخولك للوصول إلى حسابك",
                 login_title2: "تسجيل الدخول", login_subtitle2: "أدخل معلوماتك",
-                login_google: "المتابعة مع Google", login_facebook: "المتابعة مع Facebook",
                 login_or: "أو", login_email: "البريد الإلكتروني", login_password: "كلمة المرور", login_submit: "تسجيل الدخول",
                 login_no_account: "ليس لديك حساب؟", login_register: "إنشاء حساب",
                 login_has_account: "لديك حساب؟", login_link: "تسجيل الدخول",
@@ -3141,8 +3009,6 @@
                 email_select_title: "اختر البريد الإلكتروني الرئيسي",
                 email_select_subtitle: "اختر البريد الإلكتروني الذي تريد استخدامه في SAC PRIX CHOC",
                 email_select_confirm: "تأكيد",
-                email_type_google: "حساب Google",
-                email_type_facebook: "حساب Facebook",
                 email_type_personal: "بريد شخصي",
                 email_none_hint: "لم يتم اكتشاف بريد، أدخل واحد يدوياً",
                 verify_title: "تحقق من البريد الإلكتروني",
