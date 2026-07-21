@@ -2402,59 +2402,12 @@
         </div>
     </section>
 
-    <!-- Categories Section -->
-    <section class="section" id="categories">
-        <div class="section-header">
-            <span class="tag" data-i18n="cat_tag">Nos Categories</span>
-            <h2 data-i18n="cat_title">Explorez Notre Univers</h2>
-            <p data-i18n="cat_desc">Des sacs pour chaque occasion et chaque style</p>
-        </div>
-        <div class="categories-grid">
-            <div class="category-card">
-                <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500" alt="Sacs a Main">
-                <div class="category-overlay">
-                    <h3 data-i18n="cat_handbags">Sacs a Main</h3>
-                    <span>120+ <span data-i18n="cat_items">pieces</span></span>
-                </div>
-            </div>
-            <div class="category-card">
-                <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500" alt="Sacs a Dos">
-                <div class="category-overlay">
-                    <h3 data-i18n="cat_backpacks">Sacs a Dos</h3>
-                    <span>85+ <span data-i18n="cat_items">pieces</span></span>
-                </div>
-            </div>
-            <div class="category-card">
-                <img src="https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=500" alt="Sacs a Bandouliere">
-                <div class="category-overlay">
-                    <h3 data-i18n="cat_crossbody">Sacs a Bandouliere</h3>
-                    <span>95+ <span data-i18n="cat_items">pieces</span></span>
-                </div>
-            </div>
-            <div class="category-card">
-                <img src="https://images.unsplash.com/photo-1590874103328-eac38ef682df?w=500" alt="Sacs de Soiree">
-                <div class="category-overlay">
-                    <h3 data-i18n="cat_evening">Sacs de Soiree</h3>
-                    <span>60+ <span data-i18n="cat_items">pieces</span></span>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Products Section -->
     <section class="section" id="products">
         <div class="section-header">
             <span class="tag" data-i18n="prod_tag">Nos Produits</span>
             <h2 data-i18n="prod_title">Sacs Populaires</h2>
             <p data-i18n="prod_desc">Les meilleures ventes a prix imbattables</p>
-        </div>
-
-        <div class="products-filter">
-            <button class="filter-btn active" onclick="filterProducts('all', this)" data-i18n="filter_all">Tous</button>
-            <button class="filter-btn" onclick="filterProducts('handbag', this)" data-i18n="filter_handbags">Sacs a Main</button>
-            <button class="filter-btn" onclick="filterProducts('backpack', this)" data-i18n="filter_backpacks">Sacs a Dos</button>
-            <button class="filter-btn" onclick="filterProducts('crossbody', this)" data-i18n="filter_crossbody">Bandouliere</button>
-            <button class="filter-btn" onclick="filterProducts('evening', this)" data-i18n="filter_evening">Soiree</button>
         </div>
 
         <div class="products-grid" id="productsGrid"></div>
@@ -2768,15 +2721,6 @@
                         <input type="number" id="newProdPrice" placeholder="Ex: 4500" required>
                     </div>
                     <div class="form-group">
-                        <label data-i18n="admin_prod_category">Categorie</label>
-                        <select id="newProdCategory">
-                            <option value="handbag">Sacs a Main</option>
-                            <option value="backpack">Sacs a Dos</option>
-                            <option value="crossbody">Bandouliere</option>
-                            <option value="evening">Soiree</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label data-i18n="admin_prod_badge">Badge (optionnel)</label>
                         <input type="text" id="newProdBadge" placeholder="Ex: -30% OFF">
                     </div>
@@ -2815,7 +2759,6 @@
                                 <th data-i18n="admin_th_image">Image</th>
                                 <th data-i18n="admin_th_name">Nom</th>
                                 <th data-i18n="admin_th_price">Prix</th>
-                                <th data-i18n="admin_th_category">Categorie</th>
                                 <th data-i18n="admin_th_status">Statut</th>
                                 <th data-i18n="admin_th_actions">Actions</th>
                             </tr>
@@ -3454,19 +3397,18 @@
         }
 
         // Products
-        function renderProducts(filter = 'all') {
+        function renderProducts() {
             const grid = document.getElementById('productsGrid');
             const visibleProducts = currentUser && currentUser.role === 'admin'
                 ? products
                 : products.filter(p => p.published);
-            const filtered = filter === 'all' ? visibleProducts : visibleProducts.filter(p => p.category === filter);
 
-            if (filtered.length === 0) {
+            if (visibleProducts.length === 0) {
                 grid.innerHTML = `<p style="text-align:center;color:rgba(255,255,255,0.4);padding:60px 0;grid-column:1/-1;">${currentLang === 'ar' ? 'لا توجد منتجات متاحة' : 'Aucun produit disponible'}</p>`;
                 return;
             }
 
-            grid.innerHTML = filtered.map(p => `
+            grid.innerHTML = visibleProducts.map(p => `
                 <div class="product-card" onclick="openProductModal(${p.id})">
                     ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
                     <button class="product-wishlist" onclick="event.stopPropagation();this.classList.toggle('active')">
@@ -3499,12 +3441,6 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        function filterProducts(cat, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderProducts(cat);
         }
 
         // Cart
@@ -3613,7 +3549,6 @@
             const name = document.getElementById('newProdName').value;
             const brand = document.getElementById('newProdBrand').value || 'SAC PRIX CHOC';
             const price = parseInt(document.getElementById('newProdPrice').value);
-            const category = document.getElementById('newProdCategory').value;
             const badge = document.getElementById('newProdBadge').value || null;
             const rating = parseInt(document.getElementById('newProdRating').value) || 5;
             const desc = document.getElementById('newProdDesc').value || '';
@@ -3625,7 +3560,7 @@
             }
 
             products.push({
-                id: Date.now(), name, brand, price, category, badge, rating, desc, image, published: true
+                id: Date.now(), name, brand, price, badge, rating, desc, image, published: true
             });
 
             renderProducts();
@@ -3744,7 +3679,6 @@
                     <td><img src="${p.image}" alt="${p.name}"></td>
                     <td>${p.name}</td>
                     <td style="color:var(--accent);font-weight:600;">${p.price.toLocaleString()} DA</td>
-                    <td>${p.category}</td>
                     <td>
                         <span style="padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;${p.published ? 'background:rgba(46,204,113,0.15);color:#2ECC71;' : 'background:rgba(231,76,60,0.15);color:#E74C3C;'}">
                             ${p.published ? (currentLang === 'ar' ? 'منشور' : 'Publie') : (currentLang === 'ar' ? 'مخفي' : 'Masque')}
