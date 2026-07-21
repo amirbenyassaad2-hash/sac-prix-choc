@@ -3296,8 +3296,7 @@
             messagingSenderId: "910806887525",
             appId: "1:910806887525:web:e0280ebfdda1173a8fea8c"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        let db = null;
         let products = [];
         let firebaseReady = false;
 
