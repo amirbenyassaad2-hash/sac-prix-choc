@@ -3094,6 +3094,8 @@
         }
 
         // ========== ACCOUNTS SYSTEM ==========
+        const ADMIN_EMAIL = 'amirbenyassaad2@gmail.com';
+
         function getAccounts() {
             return JSON.parse(localStorage.getItem('spc_accounts') || '[]');
         }
@@ -3147,7 +3149,8 @@
             saveAccounts(accounts);
 
             errEl.style.display = 'none';
-            currentUser = { name: email.split('@')[0], email, role: 'admin', primaryEmail: email };
+            const role = email === ADMIN_EMAIL ? 'admin' : 'customer';
+            currentUser = { name: email.split('@')[0], email, role, primaryEmail: email };
             closeModal('authModal');
             onLoginSuccess();
             showToast(translations[currentLang].toast_registered);
@@ -3180,7 +3183,8 @@
             }
 
             errEl.style.display = 'none';
-            currentUser = { name: email.split('@')[0], email, role: 'admin', primaryEmail: email };
+            const role = email === ADMIN_EMAIL ? 'admin' : 'customer';
+            currentUser = { name: email.split('@')[0], email, role, primaryEmail: email };
             closeModal('authModal');
             onLoginSuccess();
             showToast(translations[currentLang].toast_login);
